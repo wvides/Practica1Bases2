@@ -15,16 +15,8 @@ public class Main {
     
     public static void main(String args[])
     {
-            Modelo a=new Modelo();
-            a.cargarEntidades();
-           // Entidad prueba=a.BuscarEntidad("agencia");
-            
-            
-            ArrayList<String> dimensiones=a.getDimensiones("detallefactura");
-            
-            
-            int c;
-            c=1+1;
+            Front f = new Front();
+            f.setVisible(true);
     }
     
 }
