@@ -125,7 +125,7 @@ public class Entidad {
          }        
      }
      
-     public String GetCampos()
+     public String getStringCampos()
      {
           String campos="";
           Iterator<String[]> atributos = this.atributos.iterator();
