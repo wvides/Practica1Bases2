@@ -40,6 +40,15 @@ public class Modelo {
        fd= 181;
             
      }
+
+    public ArrayList<Entidad> getEntidades() {
+        return entidades;
+    }
+
+    public void setEntidades(ArrayList<Entidad> entidades) {
+        this.entidades = entidades;
+    }
+     
      
      public Entidad BuscarEntidad(String Nombre)
      {

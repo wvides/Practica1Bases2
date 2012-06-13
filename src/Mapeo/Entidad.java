@@ -18,6 +18,31 @@ public class Entidad {
      ArrayList<ForenKey> FK=new ArrayList();
      
      ArrayList<String[]> PK=new ArrayList();
+
+    public ArrayList<String[]> getPK() {
+        return PK;
+    }
+
+    public void setPK(ArrayList<String[]> PK) {
+        this.PK = PK;
+    }
+
+    public ArrayList<String[]> getAtributos() {
+        return atributos;
+    }
+
+    public void setAtributos(ArrayList<String[]> atributos) {
+        this.atributos = atributos;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+     
      
      
      public ArrayList<ForenKey> getFK()

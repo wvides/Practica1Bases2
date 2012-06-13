@@ -4,8 +4,11 @@
  */
 package GUI;
 
+import Mapeo.Entidad;
 import Mapeo.Modelo;
 import java.util.ArrayList;
+import java.util.Iterator;
+import javax.swing.DefaultListModel;
 
 /**
  *
@@ -13,11 +16,13 @@ import java.util.ArrayList;
  */
 public class Front extends javax.swing.JFrame {
 
+    DefaultListModel dm = new DefaultListModel();
     /**
      * Creates new form Front
      */
     public Front() {
         initComponents();
+        jList1.setModel(dm);
     }
 
     /**
@@ -32,6 +37,8 @@ public class Front extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -43,15 +50,23 @@ public class Front extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane1.setViewportView(jList1);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 692, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 801, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 333, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(104, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Transaccional", jPanel1);
@@ -60,11 +75,11 @@ public class Front extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 692, Short.MAX_VALUE)
+            .addGap(0, 825, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 333, Short.MAX_VALUE)
+            .addGap(0, 388, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Analitica", jPanel2);
@@ -98,8 +113,15 @@ public class Front extends javax.swing.JFrame {
             Modelo a=new Modelo();
             a.cargarEntidades();
            // Entidad prueba=a.BuscarEntidad("agencia");                        
-            ArrayList<String> dimensiones=a.getDimensiones("detallefactura");                        
-            
+            ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
+            ArrayList<Entidad> x = a.getEntidades();
+            System.out.println(x.size());
+            Iterator m = x.iterator();
+            while(m.hasNext())
+            {
+                Entidad w = (Entidad) m.next();
+                dm.addElement(w.getNombre());
+            }            
             int c;
             c=1+1;
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -147,8 +169,10 @@ public class Front extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
