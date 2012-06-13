@@ -9,6 +9,9 @@ import Mapeo.Modelo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
 
 /**
  *
@@ -22,7 +25,6 @@ public class Front extends javax.swing.JFrame {
      */
     public Front() {
         initComponents();
-        jList1.setModel(dm);
     }
 
     /**
@@ -37,8 +39,6 @@ public class Front extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -50,23 +50,15 @@ public class Front extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setViewportView(jList1);
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 801, Short.MAX_VALUE)
-                .addContainerGap())
+            .addGap(0, 911, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(104, Short.MAX_VALUE))
+            .addGap(0, 510, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Transaccional", jPanel1);
@@ -75,11 +67,11 @@ public class Front extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 825, Short.MAX_VALUE)
+            .addGap(0, 911, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 388, Short.MAX_VALUE)
+            .addGap(0, 510, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Analitica", jPanel2);
@@ -114,13 +106,40 @@ public class Front extends javax.swing.JFrame {
             a.cargarEntidades();
            // Entidad prueba=a.BuscarEntidad("agencia");                        
             ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
-            ArrayList<Entidad> x = a.getEntidades();
-            System.out.println(x.size());
+            ArrayList<Entidad> x = a.getEntidades();            
             Iterator m = x.iterator();
+            int xpos = 0;
+            int ypos = 0;
+            int wrap = 0;
             while(m.hasNext())
             {
-                Entidad w = (Entidad) m.next();
-                dm.addElement(w.getNombre());
+                Entidad w = (Entidad) m.next();                
+                JInternalFrame f = new JInternalFrame(w.getNombre(), true);
+                JPanel jp = new JPanel();
+                jp.setBounds(0, 0, 200, 150);
+                ArrayList<String[]> att = w.getAtributos();
+                System.out.println(att.size());
+                Iterator u = att.iterator();
+                while(u.hasNext())
+                {
+                    String[] t = (String[]) u.next();
+                    JCheckBox chk = new JCheckBox(t[1] + " " + t[0]);
+                    System.out.println(t[0]);
+                    jp.add(chk);
+                    
+                }
+                f.add(jp);
+                if(wrap == 7)
+                {
+                    ypos++;
+                    xpos = 0;
+                    wrap = 0;
+                }
+                f.setBounds(xpos * 210, ypos*155, 200, 150);
+                f.setVisible(true);                
+                this.jPanel1.add(f);
+                xpos++;
+                wrap++;
             }            
             int c;
             c=1+1;
@@ -169,10 +188,8 @@ public class Front extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JList jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
