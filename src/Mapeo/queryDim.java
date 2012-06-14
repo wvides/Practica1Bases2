@@ -4,11 +4,20 @@
  */
 package Mapeo;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author eddytrex
  */
 public class queryDim {
+    
+    public ArrayList<String> Jerarquia=new ArrayList();
+    
+    public ArrayList<String> CamposLlave=new ArrayList();
+    
+    String Nombre;  
+    
     String Encabezado;
     String Tablas;
     String Condicion;
@@ -90,7 +99,7 @@ public class queryDim {
             {
                 
                     Select="SELECT  "+this.Encabezado+" FROM "+this.Tablas+" WHERE "+this.Condicion+";";                    
-                    result="CREATE VIEW "+nombreDim+" AS "+Select;
+                    result="CREATE TABLE "+nombreDim+" AS "+Select;
                     Sql createView=new Sql();
                     String prueba=createView.ejecuta(result);
                     int a;
@@ -100,7 +109,7 @@ public class queryDim {
             if(!this.Encabezado.equals("") && !this.Tablas.equals("")&&this.Condicion.equals(""))
             {
                 Select="SELECT  "+this.Encabezado+" FROM "+this.Tablas+";";                    
-                result="CREATE VIEW "+nombreDim+" AS "+Select;
+                result="CREATE TABLE "+nombreDim+" AS "+Select;
                 Sql createView=new Sql();
                 String prueba=createView.ejecuta(result);
                 
@@ -109,5 +118,12 @@ public class queryDim {
             }
             return result;
     }
+    
+    public boolean equals(queryDim a)
+    {
+        if(this.Nombre.equals(a.Nombre)){return true;}
+        return false;
+    }
+    
    
 }

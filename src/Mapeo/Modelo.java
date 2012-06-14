@@ -73,7 +73,7 @@ public class Modelo {
          Entidad origen=this.BuscarEntidad(relacion.tablaPadre);
          if(origen!=null)
          {    
-             result.addEncabezado(origen.GetCampos());
+             result.addEncabezado(origen.getStringCampos());
              result.addTabas(origen.nombre);
              Iterator<ForenKey>  FKs = origen.getFK().iterator();
              while(FKs.hasNext())
@@ -107,4 +107,6 @@ public class Modelo {
          }         
          return dimensiones;
      }
+     
+     
 }
