@@ -5,17 +5,36 @@
 package Mapeo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
  * @author eddytrex
  */
-public class queryDim {
+public class queryDim {    
     
-    public ArrayList<String> Jerarquia=new ArrayList();
     
     public ArrayList<String> CamposLlave=new ArrayList();
     
+    public ArrayList<String> Atributos=new ArrayList();
+
+    ArrayList<String> Entidades=new ArrayList();
+    
+    
+    public ForenKey forenKeyOriginal;
+    
+    String Select="";
+    
+    public ArrayList<String> getAtributos() {
+        return Atributos;
+    }   
+     
+
+    public ArrayList<String> getEntidades() {
+        return Entidades;
+    }    
+    
+    public void addEntidad(String e){ this.Entidades.add(e);}    
     String Nombre;  
     
     String Encabezado;
@@ -28,6 +47,11 @@ public class queryDim {
         Tablas="";
         Condicion="";
    } 
+   
+   public void addAtributos(ArrayList<String> campos)
+   {
+        this.Atributos=campos;       
+   }
    
    public void addEncabezado(String header)
    {
@@ -46,12 +70,16 @@ public class queryDim {
         if(!Tablas.equals(""))
         {
           Tablas=Tablas+","+Tabla; 
+          this.Entidades.add(Tabla) ;
         }
         else
         {
+           this.Entidades.add(Tabla) ;
             Tablas=Tabla;
         }
    }
+   
+   
    
    public void addCondicion(String subCondicion)
    {
@@ -69,6 +97,26 @@ public class queryDim {
    {
        queryDim result=new queryDim();
        
+       Iterator<String> camposa=a.getAtributos().iterator();
+       Iterator<String>  camposthis=this.getAtributos().iterator();
+       
+       while(camposthis.hasNext())
+       {
+           result.Atributos.add(camposthis.next());
+       }
+       
+       while(camposa.hasNext())
+       {
+            result.Atributos.add(camposa.next());
+       }
+       
+       
+       Iterator<String> tablasa=a.getEntidades().iterator();
+      while(tablasa.hasNext())
+      {
+          this.addEntidad(tablasa.next());
+      }
+       
         if(!a.Condicion.equals(""))
         {result.Condicion=a.Condicion+" and  "+this.Condicion;}
         else
@@ -85,7 +133,7 @@ public class queryDim {
             result.Encabezado=this.Encabezado;
         }
         
-        
+        result.forenKeyOriginal=this.forenKeyOriginal;
         result.Tablas=a.Tablas+","+this.Tablas;       
        return result;
       }
@@ -93,13 +141,17 @@ public class queryDim {
     public String getView(String nombreDim)
     {
             String result="";
-            String Select="";
+            
+            this.Nombre=nombreDim;
             
             if(!this.Encabezado.equals("") && !this.Tablas.equals("")&&!this.Condicion.equals(""))
             {
-                
-                    Select="SELECT  "+this.Encabezado+" FROM "+this.Tablas+" WHERE "+this.Condicion+";";                    
-                    result="CREATE TABLE "+nombreDim+" AS "+Select;
+                   String restartSeq="ALTER SEQUENCE sk_dim RESTART 1;";
+                   Sql restart=new Sql();
+                   restart.ejecuta(restartSeq);
+                   
+                    this.Select="SELECT  nextval(\'sk_dim\') AS PK,"+this.Encabezado+" FROM "+this.Tablas+" WHERE "+this.Condicion+";";                    
+                    result="CREATE TABLE "+nombreDim+" AS "+this.Select;
                     Sql createView=new Sql();
                     String prueba=createView.ejecuta(result);
                     int a;
@@ -108,8 +160,12 @@ public class queryDim {
             }
             if(!this.Encabezado.equals("") && !this.Tablas.equals("")&&this.Condicion.equals(""))
             {
-                Select="SELECT  "+this.Encabezado+" FROM "+this.Tablas+";";                    
-                result="CREATE TABLE "+nombreDim+" AS "+Select;
+                String restartSeq="ALTER SEQUENCE sk_dim RESTART 1;";
+                Sql restart=new Sql();
+                restart.ejecuta(restartSeq);
+                   
+                this.Select="SELECT nextval(\'sk_dim\') AS PK,"+this.Encabezado+" FROM "+this.Tablas+";";                    
+                result="CREATE TABLE "+nombreDim+" AS "+this.Select;
                 Sql createView=new Sql();
                 String prueba=createView.ejecuta(result);
                 
@@ -125,5 +181,34 @@ public class queryDim {
         return false;
     }
     
+    
+    public void CrearDimensionTiempo(String campo_fecha)
+    {
+        String pk="";
+        
+        if(this.Atributos.contains(campo_fecha))            
+        {    
+        Iterator<String> clave=this.forenKeyOriginal.campos.iterator();
+        
+        if(clave.hasNext())
+        {
+            pk="t."+this.forenKeyOriginal.tablaPadre+"_"+clave.next();
+        while(clave.hasNext())
+        {
+            pk=pk+", t."+this.forenKeyOriginal.tablaPadre+"_"+clave.next();
+        }
+            
+        }
+        
+        String encabezado=pk+", extract(year from t."+campo_fecha+") AS año ,extract(quarter from t."+ campo_fecha+") AS trimestre ,extract(month from t."+ campo_fecha+") AS mes ,extract(day from t."+campo_fecha+") AS dia";
+        String tablas=this.Nombre+" t";        
+        String CrearTabla="CREATE TABLE dim_tiempo "+" AS SELECT "+encabezado+" FROM "+tablas+";"; 
+        
+        Sql a=new Sql();
+        a.ejecuta(CrearTabla);
+        }  
+    }
+    
    
 }
+

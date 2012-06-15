@@ -145,4 +145,16 @@ public class Entidad {
          return campos;
      }
      
+     public ArrayList<String> getCamposAsAlias()
+     {
+         ArrayList<String> result=new ArrayList();
+         Iterator<String[]> atrib=this.atributos.iterator();
+          while(atrib.hasNext()) 
+          {
+              result.add(this.nombre+"_"+atrib.next()[0]);          
+          }
+                
+         return result;
+     }
+     
 }

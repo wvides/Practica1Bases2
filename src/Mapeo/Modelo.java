@@ -14,7 +14,23 @@ import java.util.Iterator;
 public class Modelo {
      ArrayList <Entidad> entidades=new ArrayList();
     
+     Entidad entidadParaEchos;
+     ArrayList<queryDim> dimOriginales=new ArrayList();
+
+    public ArrayList<queryDim> getDimOriginales() {
+        return dimOriginales;
+    }
      
+     String squencia=" CREATE SEQUENCE  sk_dim START WITH 1";
+     String restarSequencia="ALTER SEQUENCE sk_dim RESTART 1;";
+     
+     public Modelo()
+     {
+       
+        Sql seq=new Sql();
+        
+        seq.ejecuta(squencia);
+     }
      public void cargarEntidades(){
          
          // Crear las Entidades con sus Atributos
@@ -69,18 +85,22 @@ public class Modelo {
      public queryDim getDimension(ForenKey relacion)
      {    
          queryDim result=new queryDim();
-         
+        
          Entidad origen=this.BuscarEntidad(relacion.tablaPadre);
          if(origen!=null)
          {    
+             result.forenKeyOriginal=relacion;
              result.addEncabezado(origen.getStringCampos());
+             result.addAtributos(origen.getCamposAsAlias());
              result.addTabas(origen.nombre);
              Iterator<ForenKey>  FKs = origen.getFK().iterator();
              while(FKs.hasNext())
              {
                  ForenKey temp=FKs.next();
-                 result.addCondicion(temp.GetSubCondicion());
+                 
+                 result.addCondicion(temp.GetSubCondicion());                 
                  queryDim tempDim=getDimension(temp);      
+                 
                  result=result.Funcionar(tempDim);                 
              }             
          }
@@ -91,6 +111,7 @@ public class Modelo {
      {
          ArrayList<String> dimensiones=new ArrayList();
          Entidad hechos=this.BuscarEntidad(entidadHechos);
+         entidadParaEchos=hechos;
          if(hechos!=null)
          {
            ArrayList<ForenKey> FK=new ArrayList();
@@ -101,12 +122,15 @@ public class Modelo {
             {
                 num++;
                 queryDim tempQueryDim=this.getDimension(i.next());
-                dimensiones.add(tempQueryDim.getView("Dimencion_0"+num));
+                 this.dimOriginales.add(tempQueryDim);
+                dimensiones.add(tempQueryDim.getView("dimencion_0"+num));
             }
          
          }         
          return dimensiones;
      }
      
+     
+          
      
 }

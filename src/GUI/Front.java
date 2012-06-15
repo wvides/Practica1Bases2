@@ -4,7 +4,9 @@
  */
 package GUI;
 
+import Mapeo.Dimension;
 import Mapeo.Entidad;
+import Mapeo.Estrella;
 import Mapeo.Modelo;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -105,8 +107,42 @@ public class Front extends javax.swing.JFrame {
             Modelo a=new Modelo();
             a.cargarEntidades();
            // Entidad prueba=a.BuscarEntidad("agencia");                        
-            ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
+            //ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
             ArrayList<Entidad> x = a.getEntidades();            
+            
+            ArrayList<String> metricas=new ArrayList();
+            
+            
+            Estrella es=new Estrella(a,"detallefactura",metricas);
+            
+            ArrayList<String> jeraquia=new ArrayList();
+            
+            jeraquia.add("pais_nombre");
+            jeraquia.add("departamento_nombre");
+            jeraquia.add("municipio_nombre");
+            jeraquia.add("agencia_nombre");           
+            
+            es.setDimX1("dimencion_02", jeraquia, "ubicacion");
+            
+           //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
+           
+           //a.getDimOriginales().get(1).CrearDimensionTiempo("factura_fecha");
+                    
+           //dim.CrearDimension("Ubicacion");
+                     
+           jeraquia=new ArrayList();
+           jeraquia.add("producto_nombre");
+           
+           es.setDimX1("dimencion_01", jeraquia, "producto");
+           
+           es.setDimTiempo("dimencion_02", "factura_fecha");
+           
+           //Dimension dim0=new Dimension(a.getDimOriginales().get(0),jeraquia);         
+           
+           //dim0.CrearDimension("producto");
+           
+           int B=10;
+           B=10+1;            
             Iterator m = x.iterator();
             int xpos = 0;
             int ypos = 0;
