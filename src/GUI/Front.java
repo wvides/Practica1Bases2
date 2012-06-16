@@ -110,39 +110,7 @@ public class Front extends javax.swing.JFrame {
             //ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
             ArrayList<Entidad> x = a.getEntidades();            
             
-            ArrayList<String> metricas=new ArrayList();
-            
-            metricas.add("cantidad");
-            
-            Olap es=new Olap(a,"detallefactura",metricas);
-            
-            ArrayList<String> jeraquia=new ArrayList();
-            
-            jeraquia.add("pais_nombre");
-            jeraquia.add("departamento_nombre");
-            jeraquia.add("municipio_nombre");
-            jeraquia.add("agencia_nombre");           
-            
-            es.setDimX1("dimencion_02", jeraquia, "ubicacion");
-            
-           //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
-           
-           //a.getDimOriginales().get(1).CrearDimensionTiempo("factura_fecha");
-                    
-           //dim.CrearDimension("Ubicacion");
-                     
-           jeraquia=new ArrayList();
-           jeraquia.add("producto_nombre");
-           
-           es.setDimX1("dimencion_01", jeraquia, "producto");
-           
-           es.setDimTiempo("dimencion_02", "factura_fecha");
-           
-           //Dimension dim0=new Dimension(a.getDimOriginales().get(0),jeraquia);         
-           
-           //dim0.CrearDimension("producto");
-           
-           es.generaTablaEchos("prueba");
+          
            
            int B=10;
            B=10+1;            
@@ -179,7 +147,43 @@ public class Front extends javax.swing.JFrame {
                 this.jPanel1.add(f);
                 xpos++;
                 wrap++;
-            }            
+            }      
+            
+           
+            
+            ArrayList<String> metricas=new ArrayList();
+            
+            metricas.add("cantidad");
+            
+            Olap es=new Olap(a,"detallefactura",metricas);
+            
+            ArrayList<String> jeraquia=new ArrayList();
+            
+            jeraquia.add("pais_nombre");
+            jeraquia.add("departamento_nombre");
+            jeraquia.add("municipio_nombre");
+            jeraquia.add("agencia_nombre");           
+            
+            es.setDimX1("dimencion_02", jeraquia, "ubicacion");
+            
+           //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
+           
+           //a.getDimOriginales().get(1).CrearDimensionTiempo("factura_fecha");
+                    
+           //dim.CrearDimension("Ubicacion");
+                     
+           jeraquia=new ArrayList();
+           jeraquia.add("producto_nombre");
+           
+           es.setDimX1("dimencion_01", jeraquia, "producto");
+           
+           es.setDimTiempo("dimencion_02", "factura_fecha");
+           
+           //Dimension dim0=new Dimension(a.getDimOriginales().get(0),jeraquia);         
+           
+           //dim0.CrearDimension("producto");
+           
+           es.generaTablaEchos("prueba");
             int c;
             c=1+1;
     }//GEN-LAST:event_jButton1ActionPerformed

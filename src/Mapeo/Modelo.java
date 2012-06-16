@@ -123,7 +123,7 @@ public class Modelo {
                 num++;
                 queryDim tempQueryDim=this.getDimension(i.next());
                  this.dimOriginales.add(tempQueryDim);
-                dimensiones.add(tempQueryDim.getView("dimencion_0"+num));
+                dimensiones.add(tempQueryDim.getView("dimension_0"+num));
             }
          
          }         
