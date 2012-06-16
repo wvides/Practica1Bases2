@@ -74,7 +74,7 @@ public class Dimension {
    public void CrearDimension(String Nombre)
    {    
        boolean bandera=true;
-       this.NombreDim=Nombre;
+       this.NombreDim="dim_"+Nombre;
        Iterator <String> campo=this.Jerarquia.iterator();
        while(campo.hasNext())
        {

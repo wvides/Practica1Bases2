@@ -27,6 +27,15 @@ public class ForenKey {
         tablaPadre = fila [2];
     }
    
+    public ForenKey(ArrayList<String> c,ArrayList<String> cp,String tp,String th)
+    {
+            this.camposPadre=cp;
+            this.campos=c;
+            
+            this.tablaPadre=tp;
+            this.tablaHija=th;
+    }
+    
     public ForenKey(String tablaOrigen, String tablaDestino)
     {
           String consulta=" SELECT  a.column_name Campo_Origen,  b.column_name Campo_Destino "

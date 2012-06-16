@@ -13,31 +13,34 @@ import java.util.Iterator;
  */
 public class Estrella {
     
+    
+    
     Modelo a;    
     
-    ArrayList<queryDim> dimensionesPosibles;
-
-    
-
-    
+    ArrayList<queryDim> dimensionesPosibles;     
     
     ArrayList <Dimension> dimX1=new ArrayList();
      
     String tablaechosOrignial;
     
+    String NombreTablahechos;   
+    ArrayList <String> camposTablahechos=new ArrayList();
+    ArrayList<ForenKey> listaNuevasFK=new ArrayList();
     
-    ArrayList<String> Metricas=new ArrayList();
+    
+    
+    ArrayList<String> Camposmetricas=new ArrayList();
     
     
     public ArrayList<queryDim> getDimensionesPosibles() {
         return dimensionesPosibles;
     }
     
-    public Estrella(Modelo m,String tablaHechos,ArrayList<String> metricas)
+    public Estrella(Modelo m,String tablaHechos,ArrayList<String> camposmetricas)
     {
         this.a=m;
         
-        this.Metricas=metricas;
+        this.Camposmetricas=camposmetricas;
         this.tablaechosOrignial=tablaHechos;
         a.cargarEntidades();
         a.getDimensiones(tablaHechos);                
@@ -83,9 +86,144 @@ public class Estrella {
         }
      }
      
-     public void generaTablaEchos()
+     public void generaTablaEchos(String ntablaH)
      {      
+            this.NombreTablahechos=ntablaH;
+            Iterator <Dimension> dimension=this.dimX1.iterator();
+            queryDim n=new queryDim();
             
+            String sPredicadoC="";
+            String sTablasC="";
+            String sCamposC="";
+            
+            String sCampos="";
+            String sTablas="";
+            String sPredicado="";
+            
+            ArrayList<String> Campos =new ArrayList();
+            ArrayList<String> Tablas=new ArrayList();
+            
+            ArrayList<String> cp=new ArrayList();
+            ArrayList<String> c=new ArrayList();
+            
+            if(dimension.hasNext())
+            {
+               Dimension tempX1=dimension.next();
+                Tablas.add(tempX1.NombreDim);               
+                  
+                Iterator <String> camposllave=tempX1.dimOriginal.forenKeyOriginal.camposPadre.iterator();                
+                Iterator <String> camposllaveHija=tempX1.dimOriginal.forenKeyOriginal.campos.iterator();                
+                                
+                String tablaPadreO=tempX1.dimOriginal.forenKeyOriginal.tablaPadre;
+                
+                 if(camposllave.hasNext())
+                 {
+                    String tempCampollave=camposllave.next();
+                    String tempCampollavehija=camposllaveHija.next();
+                    Campos.add(tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave);
+                    
+                    cp.add(tablaPadreO+"_"+tempCampollave);
+                    c.add(tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave);
+                            
+                    sCampos=tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave+" AS "+tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave;
+                    sPredicado=tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave+"="+this.tablaechosOrignial+"."+tempCampollavehija;
+                    
+                  while(camposllave.hasNext())
+                  {
+                    tempCampollave=camposllave.next();
+                    tempCampollavehija=camposllaveHija.next();
+                    Campos.add(tempX1.NombreDim+"_"+tempCampollave);
+                    
+                    cp.add(tablaPadreO+"_"+tempCampollave);
+                    c.add(tempX1.NombreDim+"_"+tempCampollave);
+                    
+                    sCampos=tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave+" AS "+tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave;;
+                    sPredicado=sPredicado+" and "+tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave+"="+this.tablaechosOrignial+"."+tempCampollavehija;
+                  }
+                  
+                  this.listaNuevasFK.add(new ForenKey(c,cp,tempX1.NombreDim,NombreTablahechos));
+                  cp=new ArrayList();
+                  c=new ArrayList();
+                }
+                sCamposC=sCampos;
+                sPredicadoC=sPredicado;    
+                                
+                while(dimension.hasNext())
+                {
+                    
+                 tempX1=dimension.next();
+                Tablas.add(tempX1.NombreDim);               
+                  
+                camposllave=tempX1.dimOriginal.forenKeyOriginal.camposPadre.iterator();                
+                camposllaveHija=tempX1.dimOriginal.forenKeyOriginal.campos.iterator();                
+                                
+                 tablaPadreO=tempX1.dimOriginal.forenKeyOriginal.tablaPadre;
+                
+                 if(camposllave.hasNext())
+                 {
+                    String tempCampollave=camposllave.next();
+                    String tempCampollavehija=camposllaveHija.next();
+                    Campos.add(tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave);
+                    
+                    cp.add(tablaPadreO+"_"+tempCampollave);
+                    c.add(tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave);
+                    
+                    sCampos=tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave+" AS "+tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave;
+                    sPredicado=tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave+"="+this.tablaechosOrignial+"."+tempCampollavehija;
+                    
+                  while(camposllave.hasNext())
+                  {
+                    tempCampollave=camposllave.next();
+                    tempCampollavehija=camposllaveHija.next();
+                    Campos.add(tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave);
+                    
+                    cp.add(tablaPadreO+"_"+tempCampollave);
+                    c.add(tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave);
+                    
+                    sCampos=tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave +" AS "+tempX1.NombreDim+"_"+tablaPadreO+"_"+tempCampollave;
+                    sPredicado=sPredicado+" and "+tempX1.NombreDim+"."+tablaPadreO+"_"+tempCampollave+"="+this.tablaechosOrignial+"."+tempCampollavehija;
+                  }                
+                }
+                 
+                 this.listaNuevasFK.add(new ForenKey(c,cp,tempX1.NombreDim,NombreTablahechos));
+                 cp=new ArrayList();
+                 c=new ArrayList();
+                 
+                sCamposC=sCamposC+","+sCampos;
+                sPredicadoC=sPredicadoC+" and "+sPredicado;    
+                }
+            }
+            
+            
+            Tablas.add(this.tablaechosOrignial);
+            Iterator<String> T=Tablas.iterator();
+            if(T.hasNext())
+            {
+                sTablasC=T.next();
+                while(T.hasNext())
+                {
+                    sTablasC=sTablasC+","+T.next();
+                }
+            
+            }
+            
+            Iterator<String> mcamposMetricas=this.Camposmetricas.iterator();
+            while(mcamposMetricas.hasNext())
+            {
+                String tempcMetica=mcamposMetricas.next();
+                Campos.add(tempcMetica);                                          
+                sCamposC=sCamposC+", "+tempcMetica;
+            }
+            
+            
+            
+            String STH="CREATE TABLE "+this.NombreTablahechos+" AS SELECT "+sCamposC+" FROM "+sTablasC+" WHERE "+sPredicadoC+";";
+            
+            Sql th=new Sql();
+            th.ejecuta(STH);
+            
+            int p;
+            p=1;
      }
     
     

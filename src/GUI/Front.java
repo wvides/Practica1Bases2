@@ -112,6 +112,7 @@ public class Front extends javax.swing.JFrame {
             
             ArrayList<String> metricas=new ArrayList();
             
+            metricas.add("cantidad");
             
             Estrella es=new Estrella(a,"detallefactura",metricas);
             
@@ -140,6 +141,8 @@ public class Front extends javax.swing.JFrame {
            //Dimension dim0=new Dimension(a.getDimOriginales().get(0),jeraquia);         
            
            //dim0.CrearDimension("producto");
+           
+           es.generaTablaEchos("prueba");
            
            int B=10;
            B=10+1;            
