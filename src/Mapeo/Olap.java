@@ -11,8 +11,10 @@ import java.util.Iterator;
  *
  * @author eddytrex
  */
-public class Estrella {
+public class Olap {
     
+    
+    ModeloEstrella estrella;
     
     
     Modelo a;    
@@ -36,7 +38,7 @@ public class Estrella {
         return dimensionesPosibles;
     }
     
-    public Estrella(Modelo m,String tablaHechos,ArrayList<String> camposmetricas)
+    public Olap(Modelo m,String tablaHechos,ArrayList<String> camposmetricas)
     {
         this.a=m;
         
@@ -222,6 +224,8 @@ public class Estrella {
             Sql th=new Sql();
             th.ejecuta(STH);
             
+            
+            this.estrella=new ModeloEstrella(this.dimX1,Campos,this.listaNuevasFK);
             int p;
             p=1;
      }

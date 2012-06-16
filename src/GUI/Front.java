@@ -6,7 +6,7 @@ package GUI;
 
 import Mapeo.Dimension;
 import Mapeo.Entidad;
-import Mapeo.Estrella;
+import Mapeo.Olap;
 import Mapeo.Modelo;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -114,7 +114,7 @@ public class Front extends javax.swing.JFrame {
             
             metricas.add("cantidad");
             
-            Estrella es=new Estrella(a,"detallefactura",metricas);
+            Olap es=new Olap(a,"detallefactura",metricas);
             
             ArrayList<String> jeraquia=new ArrayList();
             
