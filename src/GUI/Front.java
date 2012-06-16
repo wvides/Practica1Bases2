@@ -154,7 +154,8 @@ public class Front extends javax.swing.JFrame {
             ArrayList<String> metricas=new ArrayList();
             
             metricas.add("cantidad");
-            
+            // un modelo una tabla de hechos, y metricas (campos de la tabla hechos)
+            //entre los atributos de Olap tiene un ArrayList de dimenciones (dimensionesPosibles de tipo queryDim ) sin jerarquia para que el usuario elija 
             Olap es=new Olap(a,"detallefactura",metricas);
             
             ArrayList<String> jeraquia=new ArrayList();
@@ -179,11 +180,11 @@ public class Front extends javax.swing.JFrame {
            
            es.setDimTiempo("dimencion_02", "factura_fecha");
            
-           //Dimension dim0=new Dimension(a.getDimOriginales().get(0),jeraquia);         
            
-           //dim0.CrearDimension("producto");
-           
+           // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
            es.generaTablaEchos("prueba");
+           //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
+           
             int c;
             c=1+1;
     }//GEN-LAST:event_jButton1ActionPerformed
