@@ -13,13 +13,15 @@ import java.util.Iterator;
  */
 public class ForenKey {
     
-    public ArrayList<String> campos=new ArrayList();
-    public ArrayList<String> camposPadre=new ArrayList();
+    //Ambos arreglos siempre tendrán el mismo tamaño
+    public ArrayList<String> campos=new ArrayList(); //Hace referencia a la tabla de hechos
+    public ArrayList<String> camposPadre=new ArrayList(); //Hace referencia a la dimensión
     
-    String tablaHija;
-    public String campo;
-    public String tablaPadre;
-    public String campoPadre;
+    String tablaHija; //Tabla de hechos
+    
+    public String campo; //No se usa
+    public String tablaPadre; //Dimensión
+    public String campoPadre; //No se usa
     
     public ForenKey (String  [] fila) {
         campo = fila [1];

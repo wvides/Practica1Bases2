@@ -183,6 +183,7 @@ public class Front extends javax.swing.JFrame {
            
            // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
            es.generaTablaEchos("prueba");
+           //TODO: 
            //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
            
             int c;

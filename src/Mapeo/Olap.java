@@ -225,7 +225,7 @@ public class Olap {
             th.ejecuta(STH);
             
             
-            this.estrella=new ModeloEstrella(this.dimX1,Campos,this.listaNuevasFK);
+            this.estrella=new ModeloEstrella(this.dimX1,Campos,this.listaNuevasFK,ntablaH);
             int p;
             p=1;
      }

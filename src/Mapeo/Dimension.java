@@ -13,16 +13,16 @@ import java.util.Iterator;
  */
 public class Dimension {
 
-    ArrayList<String> Jerarquia = new ArrayList();
-    ArrayList<String> camposllave = new ArrayList();
+   public  ArrayList<String> Jerarquia = new ArrayList();
+   public  ArrayList<String> camposllave = new ArrayList();
     
-    ArrayList<String> Campos = new ArrayList();
+    public ArrayList<String> Campos = new ArrayList();
     
     
     queryDim dimOriginal;
     queryDim dimFinal;
     String sSelect;
-    String NombreDim;
+    public String NombreDim; //Nombre de la dimensión
     boolean tiempo = false;
 
     public Dimension(queryDim o, ArrayList<String> j) {
