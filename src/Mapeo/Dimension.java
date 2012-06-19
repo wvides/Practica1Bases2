@@ -25,6 +25,12 @@ public class Dimension {
     public String NombreDim; //Nombre de la dimensión
     boolean tiempo = false;
 
+    
+    public   Dimension(queryDim o)
+    {
+        this.dimOriginal=o;
+    }
+    
     public Dimension(queryDim o, ArrayList<String> j) {
         this.Jerarquia = j;
 

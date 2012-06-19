@@ -81,7 +81,8 @@ public class Olap {
         
         if(temppd!=null)
         {
-        Dimension tempdim=new Dimension(temppd,null);
+           Dimension tempdim=new    Dimension(temppd);
+        //Dimension tempdim=new Dimension(temppd,null);
         
         tempdim.CrearDimensionTiempo(campo_fecha);
         dimX1.add(tempdim);    

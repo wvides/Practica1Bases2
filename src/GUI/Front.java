@@ -165,7 +165,7 @@ public class Front extends javax.swing.JFrame {
             jeraquia.add("municipio_nombre");
             jeraquia.add("agencia_nombre");           
             
-            es.setDimX1("dimencion_02", jeraquia, "ubicacion");
+            es.setDimX1("dimension_02", jeraquia, "ubicacion");
             
            //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
            
@@ -176,9 +176,9 @@ public class Front extends javax.swing.JFrame {
            jeraquia=new ArrayList();
            jeraquia.add("producto_nombre");
            
-           es.setDimX1("dimencion_01", jeraquia, "producto");
+           es.setDimX1("dimension_01", jeraquia, "producto");
            
-           es.setDimTiempo("dimencion_02", "factura_fecha");
+           es.setDimTiempo("dimension_02", "factura_fecha");
            
            
            // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
