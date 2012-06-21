@@ -1,3 +1,4 @@
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -231,6 +232,8 @@ public class Olap {
             p=1;
      }
     
-    
+    public ModeloEstrella getModeloEstrella(){
+        return this.estrella;
+    }
     
 }
