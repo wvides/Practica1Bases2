@@ -7,6 +7,7 @@ package GUI;
 import Mapeo.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +25,9 @@ public class Front extends javax.swing.JFrame {
     Modelo a;
     public static String URL = "";
     public static String user="";
+    Olap es;
     public static String password="";
+    public ArrayList<String> jeraquia = new ArrayList<String>();
             
     DefaultListModel dm = new DefaultListModel();
     /**
@@ -43,7 +46,7 @@ public class Front extends javax.swing.JFrame {
 }
         initComponents();
         this.setExtendedState(this.getExtendedState()|JFrame.MAXIMIZED_BOTH);
-
+        jButton4.setEnabled(false);
     }
 
     /**
@@ -72,6 +75,8 @@ public class Front extends javax.swing.JFrame {
         jDesktopPane2 = new javax.swing.JDesktopPane();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        jButton4 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -209,6 +214,18 @@ public class Front extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton1);
+        jToolBar1.add(jSeparator2);
+
+        jButton4.setText("Generate Cube");
+        jButton4.setFocusable(false);
+        jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton4);
 
         jMenu1.setText("File");
 
@@ -331,6 +348,10 @@ public class Front extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        crearJerarquias();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -376,6 +397,7 @@ public class Front extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JDesktopPane jDesktopPane2;
     private javax.swing.JDialog jDialog1;
@@ -391,6 +413,7 @@ public class Front extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
@@ -454,7 +477,7 @@ public class Front extends javax.swing.JFrame {
 
     private void generarOlap(Modelo a, String title, ArrayList<String> metricas) {
         
-        Olap es=new Olap(a,title,metricas);
+        es = new Olap(a,title,metricas);
         ArrayList<queryDim> myquery = es.getDimensionesPosibles();
         crearNuevaUi(myquery);
         //generarJerarquia(es);
@@ -492,6 +515,7 @@ public class Front extends javax.swing.JFrame {
 
     private void crearNuevaUi(ArrayList<queryDim> myquery) {        
         jTabbedPane1.setEnabledAt(0, false);
+        jButton1.setEnabled(false);
         jTabbedPane1.setSelectedIndex(1);        
         int xpos = 0;
         int ypos = 0;
@@ -501,7 +525,7 @@ public class Front extends javax.swing.JFrame {
         while(xmd.hasNext())
         {
             queryDim qdim = (queryDim) xmd.next();
-            System.out.println(qdim.getNombre());
+//            System.out.println(qdim.getNombre());
             JInternalFrame f = new JInternalFrame(qdim.getNombre(), true);
             JPanel jp = new JPanel();
             jp.setBounds(0, 0, 200, 150);
@@ -513,7 +537,7 @@ public class Front extends javax.swing.JFrame {
             while(m.hasNext())
             {
                 String xdu = (String) m.next();
-                System.out.println(xdu);
+//                System.out.println(xdu);
                 JCheckBox chk = new JCheckBox(xdu);
                 jp.add(chk);
             }
@@ -529,6 +553,54 @@ public class Front extends javax.swing.JFrame {
             this.jDesktopPane2.add(f);
             xpos++;
             wrap++;
-        }                             
+        }         
+        jButton4.setEnabled(true);
+    }
+
+    private void crearJerarquias() {
+                
+        Component[] components = jDesktopPane2.getComponents();         
+        for(int x = 0; x < components.length; x++)
+        {
+            Component comp = components[x];            
+            if(comp instanceof JInternalFrame)
+            {
+                
+                JInternalFrame ff = (JInternalFrame) comp;
+                                
+                    JPanel jpn = (JPanel) ff.getContentPane().getComponent(0);                    
+                    Component[] subcomponents = jpn.getComponents(); 
+                    
+                    for(int y = 0; y < subcomponents.length; y++)
+                    {
+                        Component subcomp = subcomponents[y];                        
+                        if(subcomp instanceof JCheckBox)
+                        {
+                            JCheckBox jchk = (JCheckBox) subcomp;                            
+                            if(jchk.isSelected())
+                            {
+//                                System.out.println(jchk.getText() + " " + ff.getTitle());
+                                jeraquia.add(jchk.getText());
+                            }                                                        
+                        }
+                    }                                                   
+            
+                    es.setDimX1(ff.getTitle(), jeraquia, "Jerarquia" + x);
+
+                    
+                    jeraquia=new ArrayList();                          
+                    
+                    //for para extraccion de metricas.                                        
+                    //generarOlap(a,ff.getTitle(), metricas);
+                }
+                                    
+        }
+                // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
+                es.generaTablaEchos("prueba");
+                
+                    String msg = "Cubo generado exitosamente, ahora pueden analizarse los datos.";
+                    JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
+
+        
     }
 }
