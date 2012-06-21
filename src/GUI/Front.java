@@ -5,7 +5,9 @@
 package GUI;
 
 import Mapeo.*;
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -19,6 +21,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
  */
 public class Front extends javax.swing.JFrame {
 
+    Modelo a;
     public static String URL = "";
     public static String user="";
     public static String password="";
@@ -200,7 +203,7 @@ public class Front extends javax.swing.JFrame {
             .addGap(0, 510, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Analitica", jPanel2);
+        jTabbedPane1.addTab("Dimensiones/Jerarquias", jPanel2);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -236,8 +239,9 @@ public class Front extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            
-        Component[] components = jDesktopPane1.getComponents(); 
+        
+        ArrayList<String> metricas = new ArrayList<String>();    
+        Component[] components = jDesktopPane1.getComponents();         
         for(int x = 0; x < components.length; x++)
         {
             Component comp = components[x];            
@@ -246,10 +250,29 @@ public class Front extends javax.swing.JFrame {
                 JInternalFrame ff = (JInternalFrame) comp;
                 if(ff.isSelected())
                 {
+                    JPanel jpn = (JPanel) ff.getContentPane().getComponent(0);                    
+                    Component[] subcomponents = jpn.getComponents(); 
+                    
+                    for(int y = 0; y < subcomponents.length; y++)
+                    {
+                        Component subcomp = subcomponents[y];                        
+                        if(subcomp instanceof JCheckBox)
+                        {
+                            JCheckBox jchk = (JCheckBox) subcomp;
+                            String[] arr = jchk.getText().split("\\|");                            
+                            if(jchk.isSelected())
+                            {
+                                metricas.add(arr[1]);                                
+                            }                                                        
+                        }
+                    }
+                            
                     String msg = "Has elegido definir como fact la tabla: \"" + ff.getTitle().toUpperCase() + "\", a continuacion\n"
-                            + "se mostraran las posibles dimensiones, deberas escoger la jerarquia\n"
-                            + "y las metricas a utilizar.";
+                            + "se mostraran las posibles dimensiones, deberas escoger las jerarquias a utilizar.";
                     JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
+                    
+                    //for para extraccion de metricas.                                        
+                    generarOlap(a,ff.getTitle(), metricas);
                 }
                 
             }            
@@ -279,12 +302,13 @@ public class Front extends javax.swing.JFrame {
         this.password = jPasswordField1.getText();
         jDialog1.setVisible(false);
 //        System.out.println("My new String: " + this.URL);
-        Modelo a=new Modelo();
+        a = new Modelo();
         a.cargarEntidades();
-        cargarUI(a);
-        String msg = "En el siguiente cuadro de vista transaccional eliga una tabla para generar la tabla fact,\n y a continuacion"
-                + "Presione el boton \"Select Fact \"de la barra de menu inferior.";
-        JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
+        cargarUiTransaccional(a);
+        String msg = "En el siguiente cuadro de vista transaccional eliga una tabla para generar la tabla fact y elige\n"
+                + " tambien las metricas que deseas que se muestren de dicha tabla, a continuacion Presione el boton\n"
+                + " \"Select Fact \"de la barra de menu inferior.";
+        JOptionPane.showMessageDialog(this,msg,"PASO 1: GENERACION DE TABLA FACT\\METRICAS",JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -348,7 +372,7 @@ public class Front extends javax.swing.JFrame {
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 
-    private void cargarUI(Modelo a) {
+    private void cargarUiTransaccional(Modelo a) {
         
             a.ejecutaSecuencia();
            // Entidad prueba=a.BuscarEntidad("agencia");                        
@@ -364,44 +388,52 @@ public class Front extends javax.swing.JFrame {
             while(m.hasNext())
             {
                 Entidad w = (Entidad) m.next();                
-                JInternalFrame f = new JInternalFrame(w.getNombre(), true);
-                JPanel jp = new JPanel();
-                jp.setBounds(0, 0, 200, 150);
-                ArrayList<String[]> att = w.getAtributos();
-//                System.out.println(att.size());
-                Iterator u = att.iterator();
-                while(u.hasNext())
+                String name = w.getNombre();
+                if(!(name.toLowerCase().contains("dimension") || name.toLowerCase().contains("dimencion")
+                        || name.toLowerCase().contains("dim")))
                 {
-                    String[] t = (String[]) u.next();
-                    JCheckBox chk = new JCheckBox(t[1] + " " + t[0]);
-//                    System.out.println(t[0]);
-                    jp.add(chk);
-                    
+                    JInternalFrame f = new JInternalFrame(w.getNombre(), true);
+                    JPanel jp = new JPanel();
+                    jp.setBounds(0, 0, 200, 150);
+                    jp.setLayout(new GridLayout(5, 1, 0,2));
+                    ArrayList<String[]> att = w.getAtributos();
+    //                System.out.println(att.size());
+                    Iterator u = att.iterator();
+                    while(u.hasNext())
+                    {
+                        String[] t = (String[]) u.next();
+                        JCheckBox chk = new JCheckBox(t[1] + " | " + t[0]);
+    //                    System.out.println(t[0]);
+                        jp.add(chk);
+
+
+                    }
+                    f.add(jp);
+                    if(wrap == 6)
+                    {
+                        ypos++;
+                        xpos = 0;
+                        wrap = 0;
+                    }
+                    f.setBounds(xpos * 210, ypos*155, 200, 150);
+                    f.setVisible(true);                
+                    this.jDesktopPane1.add(f);
+                    xpos++;
+                    wrap++;
                 }
-                f.add(jp);
-                if(wrap == 6)
-                {
-                    ypos++;
-                    xpos = 0;
-                    wrap = 0;
-                }
-                f.setBounds(xpos * 210, ypos*155, 200, 150);
-                f.setVisible(true);                
-                this.jDesktopPane1.add(f);
-                xpos++;
-                wrap++;
-            }      
-            
-           
-            
-            ArrayList<String> metricas=new ArrayList();
-            
-            metricas.add("cantidad");
-            // un modelo una tabla de hechos, y metricas (campos de la tabla hechos)
-            //entre los atributos de Olap tiene un ArrayList de dimenciones (dimensionesPosibles de tipo queryDim ) sin jerarquia para que el usuario elija 
-            Olap es=new Olap(a,"detallefactura",metricas);
-            
-            ArrayList<String> jeraquia=new ArrayList();
+            }                                                               
+            int c;
+            c=1+1;
+    }
+
+    private void generarOlap(Modelo a, String title, ArrayList<String> metricas) {
+        
+        Olap es=new Olap(a,title,metricas);
+        generarJerarquia(es);
+    }
+
+    private void generarJerarquia(Olap es) {
+        ArrayList<String> jeraquia=new ArrayList();
             
             jeraquia.add("pais_nombre");
             jeraquia.add("departamento_nombre");
@@ -428,8 +460,5 @@ public class Front extends javax.swing.JFrame {
            es.generaTablaEchos("prueba");
            //TODO: 
            //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
-           
-            int c;
-            c=1+1;
     }
 }
