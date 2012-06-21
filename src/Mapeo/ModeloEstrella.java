@@ -13,11 +13,12 @@ import java.util.ArrayList;
 public class ModeloEstrella {
     
     public String NombreFactTable;
-    ArrayList <Dimension> dimX1=new ArrayList();      
+    public ArrayList <Dimension> dimX1=new ArrayList();      
     
-    ArrayList <String> campos=new ArrayList(); //Todos los atributos de la tabla de hechos
-    ArrayList<ForenKey> FK=new ArrayList();
+    public ArrayList <String> campos=new ArrayList(); //Todos los atributos de la tabla de hechos
+    public ArrayList<ForenKey> FK=new ArrayList();
     
+    public ArrayList<String> metricas=new ArrayList<String>();
     
     public ModeloEstrella(ArrayList <Dimension> x,ArrayList <String> c,ArrayList<ForenKey>fk,String nf)
     {
@@ -27,6 +28,9 @@ public class ModeloEstrella {
         this.NombreFactTable=nf;
     }
     
+    public void setMetricas(ArrayList<String> lis){
+        this.metricas=lis;
+    }
     
     
 }

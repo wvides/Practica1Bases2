@@ -4,6 +4,7 @@
  */
 package Cubo;
 
+import GUI.Front;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JCheckBox;
@@ -16,12 +17,22 @@ import Mapeo.*;
  */
 public class TestStaticCarpio {
      public static void main(String args[]) {
-         Modelo a=new Modelo();
-            a.cargarEntidades();
+         Front.URL = "jdbc:postgresql://127.0.0.1:5432/prueba1";
+        Front.user = "postgres";
+        Front.password = "postgres";
+
+        System.out.println("My new String: " + Front.URL);
+        
+          Modelo a=new Modelo();
+            a.cargarEntidades();                                    
+            a.ejecutaSecuencia();
            // Entidad prueba=a.BuscarEntidad("agencia");                        
             //ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
             ArrayList<Entidad> x = a.getEntidades();            
             
+          
+           
+          
             
            
             
@@ -37,7 +48,7 @@ public class TestStaticCarpio {
             jeraquia.add("pais_nombre");
             jeraquia.add("departamento_nombre");
             jeraquia.add("municipio_nombre");
-           jeraquia.add("agencia_nombre");           
+            jeraquia.add("agencia_nombre");           
             
             es.setDimX1("dimension_02", jeraquia, "ubicacion");
             
@@ -59,10 +70,15 @@ public class TestStaticCarpio {
            es.generaTablaEchos("prueba");
            //TODO: 
            //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
-           ModeloEstrella mode = es.getModeloEstrella();
-           int c;
-           c=1+1;
            
+          
             
+            ModeloEstrella mode= es.getModeloEstrella();
+            
+            int c;
+            c=1+1;
+            Cubo cubo= new Cubo(mode);
+            cubo.addDimensionJerarquia("dim_ubicacion", "pais_nombre");
+            cubo.getHeader(0);
      }
 }
