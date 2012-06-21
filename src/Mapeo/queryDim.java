@@ -13,14 +13,14 @@ import java.util.Iterator;
  */
 public class queryDim {    
     
+    String Nombre;      
+    String Encabezado;
+    String Tablas;
+    String Condicion;
     
-    public ArrayList<String> CamposLlave=new ArrayList();
-    
+    public ArrayList<String> CamposLlave=new ArrayList();   
     public ArrayList<String> Atributos=new ArrayList();
-
-    ArrayList<String> Entidades=new ArrayList();
-    
-    
+    ArrayList<String> Entidades=new ArrayList();        
     public ForenKey forenKeyOriginal;
     
     String Select="";
@@ -34,12 +34,7 @@ public class queryDim {
         return Entidades;
     }    
     
-    public void addEntidad(String e){ this.Entidades.add(e);}    
-    String Nombre;  
-    
-    String Encabezado;
-    String Tablas;
-    String Condicion;
+    public void addEntidad(String e){ this.Entidades.add(e);}        
     
    public queryDim()
    {
@@ -208,7 +203,10 @@ public class queryDim {
         a.ejecuta(CrearTabla);
         }  
     }
-    
-   
+
+    public String getNombre() {
+        return Nombre;
+    }
+       
 }
 

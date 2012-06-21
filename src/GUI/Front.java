@@ -69,9 +69,15 @@ public class Front extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jDesktopPane1 = new javax.swing.JDesktopPane();
-        jPanel2 = new javax.swing.JPanel();
+        jDesktopPane2 = new javax.swing.JDesktopPane();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         jDialog1.setTitle("Configuracion de conexion");
         jDialog1.setBounds(new java.awt.Rectangle(0, 0, 450, 250));
@@ -191,19 +197,7 @@ public class Front extends javax.swing.JFrame {
 
         jDesktopPane1.setAutoscrolls(true);
         jTabbedPane1.addTab("Transaccional", jDesktopPane1);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 911, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 510, Short.MAX_VALUE)
-        );
-
-        jTabbedPane1.addTab("Dimensiones/Jerarquias", jPanel2);
+        jTabbedPane1.addTab("Dimensiones/Jerarquias", jDesktopPane2);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -216,12 +210,33 @@ public class Front extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton1);
 
+        jMenu1.setText("File");
+
+        jMenuItem1.setText("New Project");
+        jMenu1.add(jMenuItem1);
+        jMenu1.add(jSeparator1);
+
+        jMenuItem2.setText("Exit");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane1)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 923, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -229,7 +244,7 @@ public class Front extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -289,6 +304,7 @@ public class Front extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        jDialog1.setLocationRelativeTo(null);
         jDialog1.setVisible(true);
     }//GEN-LAST:event_formWindowOpened
 
@@ -310,6 +326,10 @@ public class Front extends javax.swing.JFrame {
                 + " \"Select Fact \"de la barra de menu inferior.";
         JOptionPane.showMessageDialog(this,msg,"PASO 1: GENERACION DE TABLA FACT\\METRICAS",JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -357,14 +377,20 @@ public class Front extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JDesktopPane jDesktopPane1;
+    private javax.swing.JDesktopPane jDesktopPane2;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
@@ -429,7 +455,9 @@ public class Front extends javax.swing.JFrame {
     private void generarOlap(Modelo a, String title, ArrayList<String> metricas) {
         
         Olap es=new Olap(a,title,metricas);
-        generarJerarquia(es);
+        ArrayList<queryDim> myquery = es.getDimensionesPosibles();
+        crearNuevaUi(myquery);
+        //generarJerarquia(es);
     }
 
     private void generarJerarquia(Olap es) {
@@ -460,5 +488,47 @@ public class Front extends javax.swing.JFrame {
            es.generaTablaEchos("prueba");
            //TODO: 
            //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
+    }
+
+    private void crearNuevaUi(ArrayList<queryDim> myquery) {        
+        jTabbedPane1.setEnabledAt(0, false);
+        jTabbedPane1.setSelectedIndex(1);        
+        int xpos = 0;
+        int ypos = 0;
+        int wrap = 0;
+        
+        Iterator xmd = myquery.iterator();
+        while(xmd.hasNext())
+        {
+            queryDim qdim = (queryDim) xmd.next();
+            System.out.println(qdim.getNombre());
+            JInternalFrame f = new JInternalFrame(qdim.getNombre(), true);
+            JPanel jp = new JPanel();
+            jp.setBounds(0, 0, 200, 150);
+            jp.setLayout(new GridLayout(5, 1, 0,2));
+            
+            ArrayList<String> trt = qdim.getAtributos();
+            Iterator m = trt.iterator();                        
+            
+            while(m.hasNext())
+            {
+                String xdu = (String) m.next();
+                System.out.println(xdu);
+                JCheckBox chk = new JCheckBox(xdu);
+                jp.add(chk);
+            }
+            f.add(jp);
+            if(wrap == 6)
+            {
+                ypos++;
+                xpos = 0;
+                wrap = 0;
+            }
+            f.setBounds(xpos * 210, ypos*155, 200, 150);
+            f.setVisible(true);                
+            this.jDesktopPane2.add(f);
+            xpos++;
+            wrap++;
+        }                             
     }
 }
