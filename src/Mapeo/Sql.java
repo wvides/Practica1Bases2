@@ -13,14 +13,15 @@ import java.util.ArrayList;
     Author     : stuardo
  */
 public class Sql {
+    
+    Conexion db = new Conexion();
 
 // Ejecuta Insert, Delete y Update. Retorna null si todo bien, caso contrario, el mensaje de error
      public String ejecuta(String sql) {
         String mensaje= null;
         try {
-            Conexion 	db = new Conexion();//Llamamos a nuestra Clase Conexion
+            
             Connection	cn = db.getConnection();
-
             if (cn == null) {
             	mensaje = "No hay conexión a la base de datos...!";
             } else {
@@ -110,6 +111,15 @@ public class Sql {
 
         return campo;
     }
+
+    public Conexion getDb() {
+        return db;
+    }
+
+    public void setDb(Conexion db) {
+        this.db = db;
+    }
     
+     
 
 }

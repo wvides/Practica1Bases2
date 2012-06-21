@@ -5,6 +5,7 @@
 
 package Mapeo;
 
+import GUI.Front;
 import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,9 +20,9 @@ public class Conexion {
    //Creamos las siguiente variables
 
     private String	driver= "org.postgresql.Driver";
-    private String 	url= "jdbc:postgresql://127.0.0.1:5432/prueba1";
-    private String 	login= "postgres";
-    private String 	password= "postgres";
+    private String 	url= Front.URL;
+    private String 	login= Front.user;
+    private String 	password= Front.password;
 
 
     // creamos un metodo de tipo Connection
@@ -44,6 +45,15 @@ public class Conexion {
         return cn;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    
 
 
 }
