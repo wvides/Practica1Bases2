@@ -231,91 +231,7 @@ public class Front extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            Modelo a=new Modelo();
-            a.cargarEntidades();                                    
-            a.ejecutaSecuencia();
-           // Entidad prueba=a.BuscarEntidad("agencia");                        
-            //ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
-            ArrayList<Entidad> x = a.getEntidades();            
             
-          
-           
-           int B=10;
-           B=10+1;            
-            Iterator m = x.iterator();
-            int xpos = 0;
-            int ypos = 0;
-            int wrap = 0;
-            while(m.hasNext())
-            {
-                Entidad w = (Entidad) m.next();                
-                JInternalFrame f = new JInternalFrame(w.getNombre(), true);
-                JPanel jp = new JPanel();
-                jp.setBounds(0, 0, 200, 150);
-                ArrayList<String[]> att = w.getAtributos();
-                System.out.println(att.size());
-                Iterator u = att.iterator();
-                while(u.hasNext())
-                {
-                    String[] t = (String[]) u.next();
-                    JCheckBox chk = new JCheckBox(t[1] + " " + t[0]);
-                    System.out.println(t[0]);
-                    jp.add(chk);
-                    
-                }
-                f.add(jp);
-                if(wrap == 7)
-                {
-                    ypos++;
-                    xpos = 0;
-                    wrap = 0;
-                }
-                f.setBounds(xpos * 210, ypos*155, 200, 150);
-                f.setVisible(true);                
-                this.jPanel1.add(f);
-                xpos++;
-                wrap++;
-            }      
-            
-           
-            
-            ArrayList<String> metricas=new ArrayList();
-            
-            metricas.add("cantidad");
-            // un modelo una tabla de hechos, y metricas (campos de la tabla hechos)
-            //entre los atributos de Olap tiene un ArrayList de dimenciones (dimensionesPosibles de tipo queryDim ) sin jerarquia para que el usuario elija 
-            Olap es=new Olap(a,"detallefactura",metricas);
-            
-            ArrayList<String> jeraquia=new ArrayList();
-            
-            jeraquia.add("pais_nombre");
-            jeraquia.add("departamento_nombre");
-            jeraquia.add("municipio_nombre");
-            jeraquia.add("agencia_nombre");           
-            
-            es.setDimX1("dimension_02", jeraquia, "ubicacion");
-            
-           //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
-           
-           //a.getDimOriginales().get(1).CrearDimensionTiempo("factura_fecha");
-                    
-           //dim.CrearDimension("Ubicacion");
-                     
-           jeraquia=new ArrayList();
-           jeraquia.add("producto_nombre");
-           
-           es.setDimX1("dimension_01", jeraquia, "producto");
-           
-           es.setDimTiempo("dimension_02", "factura_fecha");
-           
-           
-           // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
-           es.generaTablaEchos("prueba");
-           //TODO: 
-           //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
-           
-            int c;
-            c=1+1;
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -340,6 +256,9 @@ public class Front extends javax.swing.JFrame {
         this.password = jPasswordField1.getText();
         jDialog1.setVisible(false);
         System.out.println("My new String: " + this.URL);
+        Modelo a=new Modelo();
+        a.cargarEntidades();
+        cargarUI(a);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -401,4 +320,89 @@ public class Front extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
+
+    private void cargarUI(Modelo a) {
+        
+            a.ejecutaSecuencia();
+           // Entidad prueba=a.BuscarEntidad("agencia");                        
+            //ArrayList<String> dimensiones=a.getDimensiones("detallefactura");           
+            ArrayList<Entidad> x = a.getEntidades();            
+
+           int B=10;
+           B=10+1;            
+            Iterator m = x.iterator();
+            int xpos = 0;
+            int ypos = 0;
+            int wrap = 0;
+            while(m.hasNext())
+            {
+                Entidad w = (Entidad) m.next();                
+                JInternalFrame f = new JInternalFrame(w.getNombre(), true);
+                JPanel jp = new JPanel();
+                jp.setBounds(0, 0, 200, 150);
+                ArrayList<String[]> att = w.getAtributos();
+                System.out.println(att.size());
+                Iterator u = att.iterator();
+                while(u.hasNext())
+                {
+                    String[] t = (String[]) u.next();
+                    JCheckBox chk = new JCheckBox(t[1] + " " + t[0]);
+                    System.out.println(t[0]);
+                    jp.add(chk);
+                    
+                }
+                f.add(jp);
+                if(wrap == 6)
+                {
+                    ypos++;
+                    xpos = 0;
+                    wrap = 0;
+                }
+                f.setBounds(xpos * 210, ypos*155, 200, 150);
+                f.setVisible(true);                
+                this.jPanel1.add(f);
+                xpos++;
+                wrap++;
+            }      
+            
+           
+            
+            ArrayList<String> metricas=new ArrayList();
+            
+            metricas.add("cantidad");
+            // un modelo una tabla de hechos, y metricas (campos de la tabla hechos)
+            //entre los atributos de Olap tiene un ArrayList de dimenciones (dimensionesPosibles de tipo queryDim ) sin jerarquia para que el usuario elija 
+            Olap es=new Olap(a,"detallefactura",metricas);
+            
+            ArrayList<String> jeraquia=new ArrayList();
+            
+            jeraquia.add("pais_nombre");
+            jeraquia.add("departamento_nombre");
+            jeraquia.add("municipio_nombre");
+            jeraquia.add("agencia_nombre");           
+            
+            es.setDimX1("dimension_02", jeraquia, "ubicacion");
+            
+           //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
+           
+           //a.getDimOriginales().get(1).CrearDimensionTiempo("factura_fecha");
+                    
+           //dim.CrearDimension("Ubicacion");
+                     
+           jeraquia=new ArrayList();
+           jeraquia.add("producto_nombre");
+           
+           es.setDimX1("dimension_01", jeraquia, "producto");
+           
+           es.setDimTiempo("dimension_02", "factura_fecha");
+           
+           
+           // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
+           es.generaTablaEchos("prueba");
+           //TODO: 
+           //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
+           
+            int c;
+            c=1+1;
+    }
 }
