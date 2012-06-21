@@ -5,12 +5,13 @@
 package GUI;
 
 import Mapeo.*;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 /**
  *
@@ -27,7 +28,19 @@ public class Front extends javax.swing.JFrame {
      * Creates new form Front
      */
     public Front() {
+        try {
+    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+        if ("Nimbus".equals(info.getName())) {
+            UIManager.setLookAndFeel(info.getClassName());
+            break;
+        }
+    }
+} catch (Exception e) {
+    // If Nimbus is not available, you can set the GUI to another look and feel.
+}
         initComponents();
+        this.setExtendedState(this.getExtendedState()|JFrame.MAXIMIZED_BOTH);
+
     }
 
     /**
@@ -51,10 +64,11 @@ public class Front extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jPanel2 = new javax.swing.JPanel();
+        jToolBar1 = new javax.swing.JToolBar();
+        jButton1 = new javax.swing.JButton();
 
         jDialog1.setTitle("Configuracion de conexion");
         jDialog1.setBounds(new java.awt.Rectangle(0, 0, 450, 250));
@@ -172,13 +186,6 @@ public class Front extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Test");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         jDesktopPane1.setAutoscrolls(true);
         jTabbedPane1.addTab("Transaccional", jDesktopPane1);
 
@@ -195,17 +202,25 @@ public class Front extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Analitica", jPanel2);
 
+        jToolBar1.setFloatable(false);
+        jToolBar1.setRollover(true);
+
+        jButton1.setText("Select Fact");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
-                    .addComponent(jTabbedPane1))
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -213,7 +228,7 @@ public class Front extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jTabbedPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -222,6 +237,24 @@ public class Front extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
             
+        Component[] components = jDesktopPane1.getComponents(); 
+        for(int x = 0; x < components.length; x++)
+        {
+            Component comp = components[x];            
+            if(comp instanceof JInternalFrame)
+            {
+                JInternalFrame ff = (JInternalFrame) comp;
+                if(ff.isSelected())
+                {
+                    String msg = "Has elegido definir como fact la tabla: \"" + ff.getTitle().toUpperCase() + "\", a continuacion\n"
+                            + "se mostraran las posibles dimensiones, deberas escoger la jerarquia\n"
+                            + "y las metricas a utilizar.";
+                    JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
+                }
+                
+            }            
+        }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -245,10 +278,13 @@ public class Front extends javax.swing.JFrame {
         this.user = jTextField2.getText();
         this.password = jPasswordField1.getText();
         jDialog1.setVisible(false);
-        System.out.println("My new String: " + this.URL);
+//        System.out.println("My new String: " + this.URL);
         Modelo a=new Modelo();
         a.cargarEntidades();
         cargarUI(a);
+        String msg = "En el siguiente cuadro de vista transaccional eliga una tabla para generar la tabla fact,\n y a continuacion"
+                + "Presione el boton \"Select Fact \"de la barra de menu inferior.";
+        JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -309,6 +345,7 @@ public class Front extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
+    private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 
     private void cargarUI(Modelo a) {
@@ -331,13 +368,13 @@ public class Front extends javax.swing.JFrame {
                 JPanel jp = new JPanel();
                 jp.setBounds(0, 0, 200, 150);
                 ArrayList<String[]> att = w.getAtributos();
-                System.out.println(att.size());
+//                System.out.println(att.size());
                 Iterator u = att.iterator();
                 while(u.hasNext())
                 {
                     String[] t = (String[]) u.next();
                     JCheckBox chk = new JCheckBox(t[1] + " " + t[0]);
-                    System.out.println(t[0]);
+//                    System.out.println(t[0]);
                     jp.add(chk);
                     
                 }
