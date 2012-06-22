@@ -74,11 +74,14 @@ public class TestStaticCarpio {
           
             
             ModeloEstrella mode= es.getModeloEstrella();
-            
+            mode.setMetricas(metricas);
             int c;
             c=1+1;
             Cubo cubo= new Cubo(mode);
             cubo.addDimensionJerarquia("dim_ubicacion", "pais_nombre");
-            cubo.getHeader(0);
+            cubo.addDimensionJerarquia("dim_producto", "producto_nombre");
+            //cubo.getHeader(0);
+            cubo.hacerJoin();
+            
      }
 }

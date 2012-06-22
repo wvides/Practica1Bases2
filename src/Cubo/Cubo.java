@@ -5,7 +5,9 @@
 package Cubo;
 import Mapeo.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Fer
@@ -28,7 +30,7 @@ public class Cubo {
     ArrayList<String> metricas;
     int cols=0;//Cantidad de columnas
     int fils=0;//Cantidad de filas
-            
+    DefaultTableModel mot;
     
     /*--------Constructores----------*/
     public Cubo(){ 
@@ -78,7 +80,7 @@ public class Cubo {
         Sql sq= new Sql();
         String dim=this.getDimension(i);
         String jer=this.getJerarquia(i);
-        String cons= "select d1."+jer+" from "+dim+" d1 group by d1."+jer;
+        String cons= "select d1."+jer+" from "+dim+" d1 group by d1."+jer+" order by d1."+jer;
         //ArrayList<String[]> pr=sq.consulta("select d1.pais_nombre from dim_ubicacion d1 group by d1.pais_nombre");
         ArrayList<String[]> pr=sq.consulta(cons);
         ArrayList<String> lis = new ArrayList<String>();
@@ -112,6 +114,85 @@ public class Cubo {
     
     
     public void hacerJoin(){
+        //Jerarquias
+        String com="select d1."+this.JerarquiasActuales.get(1)+", d2."+this.JerarquiasActuales.get(0)+
+                ", sum(t."+this.metricas.get(0)+")\n";
         
+        
+        //Dimensiones 
+        String fro="from "+mode.NombreFactTable+" t, "+this.DimensionesActuales.get(0)+
+                " d2, "+this.DimensionesActuales.get(1)+" d1\n";
+        
+        ArrayList<String> camps=mode.campos;
+        String camp00="";
+        String camp11="";
+        String camp0="";
+        String camp1="";
+        
+        Iterator ite= camps.iterator();
+        String st="";
+        while(ite.hasNext()){
+            st=(String)ite.next();
+            if(st.startsWith(this.DimensionesActuales.get(0))){
+                camp00=st;
+                camp0=st.replace(this.getDimension(0)+"_","");
+                break;
+            }
+        }
+        
+        Iterator ite2=camps.iterator();
+        while(ite2.hasNext()){
+            st=(String)ite2.next();
+            if(st.startsWith(this.DimensionesActuales.get(1))){
+                camp11=st;
+                camp1=st.replace(this.getDimension(1)+"_","");
+                break;
+            }
+        }
+        
+        String whe="where t."+camp00+"=d2."+camp0+"\n and t."+
+                camp11+"=d1."+camp1+"\n";
+        String gro="group by d1."+this.getJerarquia(1)+", d2."+this.getJerarquia(0)
+               +"\n order by d1."+this.getJerarquia(1)+", d2."+this.getJerarquia(0);
+        
+        String cmd=com+fro+whe+gro;
+        System.out.println(cmd);
+        
+    }
+    
+    private void hacerTableModel(String comando){
+        Sql sq= new Sql();
+        ArrayList<String[]> pr=sq.consulta(comando);
+        //System.out.println("");
+        
+        //this.mot.setDataVector(pr.toArray(), this.getColumnas());
+    }
+    
+    public String[][] convertirDatos(ArrayList<String[]> dat){
+        dat.remove(0);//Remover cabeceras
+        String[][] datos= new String[this.fils][this.cols+1];
+        HashMap hash= new HashMap();//Mapa de columnas
+        for (int i = 0; i < this.cols; i++) {
+            hash.put(i, this.columnas.get(i));
+        }
+        
+        String[] temp = (String[]) dat.get(0);
+        int lar = temp.length;//cantidad de columnas
+        int cont=0;//Contador
+        int i=0;//
+        String aux="";
+        Iterator ite = dat.iterator();
+        while(ite.hasNext()){
+            String[] vec=(String[])ite.next();
+            if(vec[0].equals(aux)){//Corrimiento e incremento
+                
+                
+            } else {
+                aux=vec[0];
+                
+            }
+            cont++;
+        }
+        return null;
     }
 }
