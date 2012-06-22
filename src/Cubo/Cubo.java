@@ -31,7 +31,7 @@ public class Cubo {
     int cols=0;//Cantidad de columnas
     int fils=0;//Cantidad de filas
     DefaultTableModel mot;
-    
+    String jerextra="";
     /*--------Constructores----------*/
     public Cubo(){ 
         mode=null;
@@ -41,6 +41,7 @@ public class Cubo {
     }
     public Cubo(ModeloEstrella mo){
         mode=mo;
+        mot=new DefaultTableModel();
         this.metricas=mode.metricas;
         this.JerarquiasActuales = new ArrayList<String>();
         this.DimensionesActuales=  new ArrayList<String>();
@@ -114,6 +115,7 @@ public class Cubo {
     
     
     public void hacerJoin(){
+        this.jerextra=this.JerarquiasActuales.get(1);
         //Jerarquias
         String com="select d1."+this.JerarquiasActuales.get(1)+", d2."+this.JerarquiasActuales.get(0)+
                 ", sum(t."+this.metricas.get(0)+")\n";
@@ -157,42 +159,72 @@ public class Cubo {
         
         String cmd=com+fro+whe+gro;
         System.out.println(cmd);
-        
+        this.hacerTableModel(cmd);
     }
     
     private void hacerTableModel(String comando){
         Sql sq= new Sql();
         ArrayList<String[]> pr=sq.consulta(comando);
         //System.out.println("");
-        
-        //this.mot.setDataVector(pr.toArray(), this.getColumnas());
+        Object[][] dats= this.convertirDatos(pr);
+        ArrayList<String> lis=new ArrayList<String>();
+        lis.add(this.jerextra);
+        lis.addAll(this.getColumnas());
+        this.mot.setDataVector(dats, lis.toArray());
     }
     
-    public String[][] convertirDatos(ArrayList<String[]> dat){
+    public Object[][] convertirDatos(ArrayList<String[]> dat){
         dat.remove(0);//Remover cabeceras
         String[][] datos= new String[this.fils][this.cols+1];
         HashMap hash= new HashMap();//Mapa de columnas
         for (int i = 0; i < this.cols; i++) {
-            hash.put(i, this.columnas.get(i));
+            hash.put(this.columnas.get(i),i+1);
         }
         
-        String[] temp = (String[]) dat.get(0);
-        int lar = temp.length;//cantidad de columnas
-        int cont=0;//Contador
-        int i=0;//
+        //String[] temp = (String[]) dat.get(0);
+        //int lar = temp.length;//cantidad de columnas
+        //int obp = lar-1;//Posicion de metrica
+        int cont=1;//Contador de columnas hechas
+        int repe=-1;//Contador de elementos repetidos
+        int i=0;//indice
+        int res=0;
         String aux="";
         Iterator ite = dat.iterator();
         while(ite.hasNext()){
             String[] vec=(String[])ite.next();
-            if(vec[0].equals(aux)){//Corrimiento e incremento
-                
-                
-            } else {
-                aux=vec[0];
-                
+            if(!vec[0].equals(aux)){
+                res=this.cols-cont+1;
+                if(res!=0 && repe>0){
+                    for (int j = 0; j < res; j++) {
+                        datos[repe][cont+j]="0";
+                        
+                    }
+                }
+                aux=vec[0];//anterior
+                repe++;
+                datos[repe][0]=aux;//Nombre de fila
+                cont=1;
             }
-            cont++;
+            //Comprobar indices
+            i=Integer.parseInt(hash.get(vec[1]).toString());
+            res=cont-i;
+            if(res<0){
+                res*=-1;
+                for (int j = 0; j < res; j++){
+                    datos[repe][cont+j]="0";
+                }
+            }
+            datos[repe][i]=vec[2];//colocando el dato
+            cont++;//inc columna hecha
         }
-        return null;
+        //Ultima fila y columna
+        res=this.cols-cont+1;
+        if(res!=0 && repe>0){
+            for (int j = 0; j < res; j++) {
+                datos[repe][cont+j]="0";
+
+            }
+        }
+        return datos;
     }
 }
