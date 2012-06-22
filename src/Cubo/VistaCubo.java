@@ -5,11 +5,11 @@
 package Cubo;
 
 import GUI.Front;
-import Mapeo.Entidad;
-import Mapeo.Modelo;
-import Mapeo.ModeloEstrella;
-import Mapeo.Olap;
+import Mapeo.*;
 import java.util.ArrayList;
+import java.util.Iterator;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
 
 /**
  *
@@ -25,6 +25,7 @@ public class VistaCubo extends javax.swing.JFrame {
     String jerv="";
     String dimh="";
     String dimv="";
+    
     public VistaCubo() {
         initComponents();
         Front.URL = "jdbc:postgresql://127.0.0.1:5432/prueba1";
@@ -62,7 +63,9 @@ public class VistaCubo extends javax.swing.JFrame {
             
             es.setDimX1("dimension_02", jeraquia, "ubicacion");
             
-           //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
+          
+            
+            //Dimension dim=new Dimension(a.getDimOriginales().get(1),jeraquia);         
            
            //a.getDimOriginales().get(1).CrearDimensionTiempo("factura_fecha");
                     
@@ -81,12 +84,13 @@ public class VistaCubo extends javax.swing.JFrame {
            //TODO: 
            //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
            
-          
+           
             
             ModeloEstrella mode= es.getModeloEstrella();
             mode.setMetricas(metricas);
             
             cubo= new Cubo(mode);
+            this.llenarItemsDims();
             cubo.addDimensionJerarquia("dim_ubicacion", "pais_nombre");
             cubo.addDimensionJerarquia("dim_producto", "producto_nombre");
             //cubo.getHeader(0);
@@ -100,8 +104,55 @@ public class VistaCubo extends javax.swing.JFrame {
     public VistaCubo(Cubo cub) {
         cubo=cub;
         initComponents();
-        
-           
+        this.llenarItemsDims();
+    }
+    
+    private void llenarItemsDims(){
+        this.dch.removeAllItems();
+        this.dcv.removeAllItems();
+        this.jch.removeAllItems();
+        this.jcv.removeAllItems();
+        ArrayList<Dimension> dims =this.cubo.mode.dimX1;
+        Iterator ite=dims.iterator();
+        int cont=0;
+        while(ite.hasNext()){
+            Dimension dim=(Dimension)ite.next();
+            this.dch.addItem(dim.NombreDim);
+            this.dcv.addItem(dim.NombreDim);
+            cont++;
+        }
+        if(cont>0){
+            dch.setSelectedIndex(0);
+            dcv.setSelectedIndex(0);
+        }
+    }
+    
+    private void llenarJerarquia(int nu){
+        JComboBox com=this.dch;
+        JComboBox hij=this.jch;
+        if(com!=null && hij !=null){
+            if(nu==1){
+                com=this.dcv;
+                hij=this.jcv;
+            }
+            if(com.getSelectedItem()!=null){
+                String di=com.getSelectedItem().toString();
+                Dimension dim=null;
+                Iterator ite=this.cubo.mode.dimX1.iterator();
+                while(ite.hasNext()){
+                    dim=(Dimension)ite.next();
+                    if(dim.NombreDim.equals(di)){
+                        hij.removeAllItems();
+                        Iterator ite2=dim.Jerarquia.iterator();
+                        while(ite2.hasNext()){
+                            String nom=ite2.next().toString();
+                            hij.addItem(nom);
+                        }
+                    }
+                }
+            }
+
+        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -131,16 +182,23 @@ public class VistaCubo extends javax.swing.JFrame {
         ndh = new javax.swing.JLabel();
         ndv = new javax.swing.JLabel();
         selHor = new javax.swing.JButton();
+        JGenerarCubo = new javax.swing.JButton();
+        selVer = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        jDesSlice = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
-        selVer = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("Dimension Horizontal:");
 
         dch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        dch.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                dchItemStateChanged(evt);
+            }
+        });
 
         jLabel2.setText("Jerarquia Dimension H:");
 
@@ -149,6 +207,11 @@ public class VistaCubo extends javax.swing.JFrame {
         jLabel3.setText("Dimension Vertical:");
 
         dcv.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        dcv.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                dcvItemStateChanged(evt);
+            }
+        });
 
         jLabel4.setText("Jerarquia Dimension V:");
 
@@ -156,15 +219,41 @@ public class VistaCubo extends javax.swing.JFrame {
 
         jLabel5.setText("Operaciones");
 
+        radH.setSelected(true);
         radH.setText("Dimension Horizontal");
+        radH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radHActionPerformed(evt);
+            }
+        });
 
         radV.setText("Dimension Vertical");
+        radV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radVActionPerformed(evt);
+            }
+        });
 
         drillup.setText("Drill up");
+        drillup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drillupActionPerformed(evt);
+            }
+        });
 
         drilldonw.setText("Drill down");
+        drilldonw.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drilldonwActionPerformed(evt);
+            }
+        });
 
         diceb.setText("Dice");
+        diceb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dicebActionPerformed(evt);
+            }
+        });
 
         slice.setText("Slice");
 
@@ -173,6 +262,27 @@ public class VistaCubo extends javax.swing.JFrame {
         ndv.setText("Nombres:");
 
         selHor.setText("seleccionar");
+        selHor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selHorActionPerformed(evt);
+            }
+        });
+
+        JGenerarCubo.setText("Generar Vista");
+        JGenerarCubo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JGenerarCuboActionPerformed(evt);
+            }
+        });
+
+        selVer.setText("seleccionar");
+        selVer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selVerActionPerformed(evt);
+            }
+        });
+
+        jDesSlice.setText("Deshacer Slice");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -190,29 +300,42 @@ public class VistaCubo extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(41, 41, 41)
+                                        .addComponent(selHor))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(29, 29, 29)
+                                        .addComponent(dcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(dcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(33, 33, 33)
-                                .addComponent(selHor)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(drillup)
-                                .addGap(18, 18, 18)
-                                .addComponent(drilldonw))
-                            .addComponent(radH)
-                            .addComponent(radV))
-                        .addGap(18, 18, 18)
+                                    .addComponent(radH)
+                                    .addComponent(radV))
+                                .addGap(77, 77, 77))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(34, 34, 34)
+                                        .addComponent(selVer)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(JGenerarCubo))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(drillup)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(drilldonw))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(20, 20, 20)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(ndv)
                             .addComponent(ndh)
@@ -220,7 +343,9 @@ public class VistaCubo extends javax.swing.JFrame {
                                 .addComponent(diceb)
                                 .addGap(18, 18, 18)
                                 .addComponent(slice)))))
-                .addContainerGap(204, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jDesSlice)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,23 +370,30 @@ public class VistaCubo extends javax.swing.JFrame {
                             .addComponent(drillup)
                             .addComponent(drilldonw)
                             .addComponent(diceb)
-                            .addComponent(slice))
-                        .addContainerGap())
+                            .addComponent(slice)
+                            .addComponent(jDesSlice)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(selHor)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(dcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(dcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(selVer)
+                    .addComponent(JGenerarCubo))
+                .addContainerGap())
         );
 
         tabla.setModel(new javax.swing.table.DefaultTableModel(
@@ -277,10 +409,6 @@ public class VistaCubo extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tabla);
 
-        selVer.setText("seleccionar");
-
-        jButton1.setText("Generar Cubo");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -288,31 +416,106 @@ public class VistaCubo extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(58, 58, 58)
-                .addComponent(selVer)
-                .addGap(73, 73, 73)
-                .addComponent(jButton1)
-                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(selVer)
-                    .addComponent(jButton1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void JGenerarCuboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JGenerarCuboActionPerformed
+        // TODO add your handling code here:
+        
+        this.cubo.cambiarDimensionJerarquia(dimh, jerh, 0);
+        this.cubo.cambiarDimensionJerarquia(dimv, jerv, 1);
+        this.cubo.rehacer();
+        
+        this.tabla.setModel(this.cubo.mot);//this.tabla.setModel(cubo.mot);
+        //this.jScrollPane1.remove(tabla);
+        //this.tabla=tab;
+        //this.jScrollPane1.add(tabla);
+        
+        
+    }//GEN-LAST:event_JGenerarCuboActionPerformed
+
+    private void radVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radVActionPerformed
+            // TODO add your handling code here:
+        if(this.radV.isSelected()){
+            this.radH.setSelected(false);
+        }
+    }//GEN-LAST:event_radVActionPerformed
+
+    private void radHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radHActionPerformed
+        // TODO add your handling code here:
+        if(this.radH.isSelected()){
+            this.radV.setSelected(false);
+        }
+    }//GEN-LAST:event_radHActionPerformed
+
+    private void dchItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dchItemStateChanged
+        // TODO add your handling code here:
+        this.llenarJerarquia(0);
+    }//GEN-LAST:event_dchItemStateChanged
+
+    private void dcvItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dcvItemStateChanged
+        // TODO add your handling code here:
+        this.llenarJerarquia(1);
+    }//GEN-LAST:event_dcvItemStateChanged
+
+    private void selHorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selHorActionPerformed
+        // TODO add your handling code here:
+        this.dimh=this.dch.getSelectedItem().toString();
+        this.jerh=this.jch.getSelectedItem().toString();
+        this.ndh.setText("Nombres: "+dimh+", "+jerh);
+    }//GEN-LAST:event_selHorActionPerformed
+
+    private void selVerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selVerActionPerformed
+        // TODO add your handling code here:
+        this.dimv=this.dcv.getSelectedItem().toString();
+        this.jerv=this.jcv.getSelectedItem().toString();
+        this.ndv.setText("Nombres: "+dimv+", "+jerv);
+    }//GEN-LAST:event_selVerActionPerformed
+
+    private void drillupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drillupActionPerformed
+        // TODO add your handling code here:
+        int nu=0;
+        if(this.radV.isSelected()){
+            nu=1;
+        }
+        this.cubo.drill(nu,false);
+        this.cubo.rehacer();
+        this.tabla.setModel(this.cubo.mot);
+    }//GEN-LAST:event_drillupActionPerformed
+
+    private void dicebActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dicebActionPerformed
+        // TODO add your handling code here:
+        this.cubo.cambiarDimensionJerarquia(dimh, jerh, 0);
+        this.cubo.cambiarDimensionJerarquia(dimv, jerv, 1);
+        this.cubo.rehacer();
+        
+        this.tabla.setModel(this.cubo.mot);
+    }//GEN-LAST:event_dicebActionPerformed
+
+    private void drilldonwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drilldonwActionPerformed
+        // TODO add your handling code here:
+        int nu=0;
+        if(this.radV.isSelected()){
+            nu=1;
+        }
+        this.cubo.drill(nu, true);
+        this.cubo.rehacer();
+        
+        this.tabla.setModel(this.cubo.mot);
+    }//GEN-LAST:event_drilldonwActionPerformed
 
     /**
      * @param args the command line arguments
@@ -356,12 +559,13 @@ public class VistaCubo extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton JGenerarCubo;
     private javax.swing.JComboBox dch;
     private javax.swing.JComboBox dcv;
     private javax.swing.JButton diceb;
     private javax.swing.JButton drilldonw;
     private javax.swing.JButton drillup;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jDesSlice;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -369,6 +573,7 @@ public class VistaCubo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JComboBox jch;
     private javax.swing.JComboBox jcv;
     private javax.swing.JLabel ndh;

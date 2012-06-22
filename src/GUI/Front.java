@@ -599,8 +599,8 @@ public class Front extends javax.swing.JFrame {
         }
                 // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
                 es.generaTablaEchos("prueba");
-                
                 Cubo cubo= new Cubo(es.getModeloEstrella());
+                cubo.setDatosUsuario(Front.URL, Front.user, Front.password);
                 VistaCubo vs= new VistaCubo(cubo);
                 vs.setVisible(true);
                     String msg = "Cubo generado exitosamente, ahora pueden analizarse los datos.";

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Fer
@@ -30,8 +31,12 @@ public class Cubo {
     ArrayList<String> metricas;
     int cols=0;//Cantidad de columnas
     int fils=0;//Cantidad de filas
-    DefaultTableModel mot;
+    ModeloTabla mot;
     String jerextra="";
+    //Datos de conexion
+    String uri="";
+    String usuario="";
+    String pass="";
     /*--------Constructores----------*/
     public Cubo(){ 
         mode=null;
@@ -41,7 +46,7 @@ public class Cubo {
     }
     public Cubo(ModeloEstrella mo){
         mode=mo;
-        mot=new DefaultTableModel();
+        mot=new ModeloTabla();
         this.metricas=mode.metricas;
         this.JerarquiasActuales = new ArrayList<String>();
         this.DimensionesActuales=  new ArrayList<String>();
@@ -64,6 +69,13 @@ public class Cubo {
                 this.DimensionesActuales.add(nom);
                 this.JerarquiasActuales.add(Jer);
         }
+    }
+    
+    public void cambiarDimensionJerarquia(String nom, String Jer, int index){
+        this.DimensionesActuales.remove(index);
+        this.JerarquiasActuales.remove(index);
+        this.DimensionesActuales.add(index, nom);
+        this.JerarquiasActuales.add(index, Jer);
     }
     
     //public void DiceDimension(String nom){  }
@@ -170,6 +182,7 @@ public class Cubo {
         ArrayList<String> lis=new ArrayList<String>();
         lis.add(this.jerextra);
         lis.addAll(this.getColumnas());
+        mot=new ModeloTabla();
         this.mot.setDataVector(dats, lis.toArray());
     }
     
@@ -226,5 +239,43 @@ public class Cubo {
             }
         }
         return datos;
+    }
+    //Datos para Conexio
+    public void setDatosUsuario(String ur, String use, String pas){
+        this.uri=ur;
+        this.usuario=use;
+        this.pass=pas;
+    }
+    
+    public void rehacer(){
+        this.hacerHeaderColumnas();
+        this.hacerHeaderFilas();
+        this.hacerJoin();
+    }
+    //Nu> 
+    public void drill(int nu, boolean tipo){
+        ArrayList<Dimension> dims=this.mode.dimX1;
+        String ds= this.DimensionesActuales.get(nu);
+        Iterator ite = dims.iterator();
+        Dimension dim=null;
+        while(ite.hasNext()){
+            dim = (Dimension)ite.next();
+            if(dim.NombreDim.equals(ds)){
+                ArrayList<String> jers=dim.Jerarquia;
+                int tam=dim.Jerarquia.size();
+                int acu=jers.indexOf(this.JerarquiasActuales.get(nu));
+                if(tipo){
+                    //if(acu<tam-1)
+                        acu++;
+                } else {
+                    if(acu>0)
+                        acu--;
+                }
+                this.JerarquiasActuales.remove(nu);
+                String jera=jers.get(acu);
+                this.JerarquiasActuales.add(nu,jera);
+            }
+        }
+        
     }
 }
