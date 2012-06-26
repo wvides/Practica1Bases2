@@ -91,12 +91,10 @@ public class VistaCubo extends javax.swing.JFrame {
             
             cubo= new Cubo(mode);
             this.llenarItemsDims();
-            cubo.addDimensionJerarquia("dim_ubicacion", "pais_nombre");
-            cubo.addDimensionJerarquia("dim_producto", "producto_nombre");
+            cubo.cambiarDimensionJerarquia("dim_ubicacion", "pais_nombre",0);
+            cubo.cambiarDimensionJerarquia("dim_producto", "producto_nombre",1);
             //cubo.getHeader(0);
-            cubo.hacerHeaderColumnas();
-            cubo.hacerHeaderFilas();
-            cubo.hacerJoin();  
+            cubo.rehacer(); 
             this.tabla.setModel(cubo.mot);
         
     }
@@ -117,8 +115,10 @@ public class VistaCubo extends javax.swing.JFrame {
         int cont=0;
         while(ite.hasNext()){
             Dimension dim=(Dimension)ite.next();
-            this.dch.addItem(dim.NombreDim);
-            this.dcv.addItem(dim.NombreDim);
+            String nom=dim.NombreDim;
+            this.dch.addItem(nom);
+            this.dcv.addItem(nom);
+            this.cubo.addDimensionJerarquia(nom, "");
             cont++;
         }
         if(cont>0){
@@ -153,6 +153,17 @@ public class VistaCubo extends javax.swing.JFrame {
             }
 
         }
+    }
+    //Cambia los nombres de los LabesNombres y cambia los JCombox de dimensiones
+    public void setNombres(){
+        this.dimh=this.cubo.DimensionesActuales.get(0);
+        this.dimv=this.cubo.DimensionesActuales.get(1);
+        this.jerh=this.cubo.JerarquiasActuales.get(0);
+        this.jerv=this.cubo.JerarquiasActuales.get(1);
+        this.ndh.setText("Nombres: "+dimh+", "+jerh);
+        this.ndv.setText("Nombres: "+dimv+", "+jerv);
+        //this.dch.setSelectedItem(dimh);
+        //this.dcv.setSelectedItem(dimv);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -312,7 +323,7 @@ public class VistaCubo extends javax.swing.JFrame {
                                         .addComponent(jLabel3)
                                         .addGap(29, 29, 29)
                                         .addComponent(dcv, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(radH)
                                     .addComponent(radV))
@@ -345,7 +356,7 @@ public class VistaCubo extends javax.swing.JFrame {
                                 .addComponent(slice)))))
                 .addGap(18, 18, 18)
                 .addComponent(jDesSlice)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(62, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -416,10 +427,9 @@ public class VistaCubo extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -475,13 +485,18 @@ public class VistaCubo extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dimh=this.dch.getSelectedItem().toString();
         this.jerh=this.jch.getSelectedItem().toString();
+        if(this.radH.isSelected())
+            this.cubo.guardarAnterior(dimh, jerh);
         this.ndh.setText("Nombres: "+dimh+", "+jerh);
+        
     }//GEN-LAST:event_selHorActionPerformed
 
     private void selVerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selVerActionPerformed
         // TODO add your handling code here:
         this.dimv=this.dcv.getSelectedItem().toString();
         this.jerv=this.jcv.getSelectedItem().toString();
+        if(this.radV.isSelected())
+            this.cubo.guardarAnterior(dimv, jerv);
         this.ndv.setText("Nombres: "+dimv+", "+jerv);
     }//GEN-LAST:event_selVerActionPerformed
 
@@ -493,15 +508,20 @@ public class VistaCubo extends javax.swing.JFrame {
         }
         this.cubo.drill(nu,false);
         this.cubo.rehacer();
+        this.setNombres();//Cambia los nombres de los LabesNombres
         this.tabla.setModel(this.cubo.mot);
     }//GEN-LAST:event_drillupActionPerformed
 
     private void dicebActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dicebActionPerformed
         // TODO add your handling code here:
-        this.cubo.cambiarDimensionJerarquia(dimh, jerh, 0);
-        this.cubo.cambiarDimensionJerarquia(dimv, jerv, 1);
-        this.cubo.rehacer();
-        
+        //this.cubo.cambiarDimensionJerarquia(dimh, jerh, 0);
+        //this.cubo.cambiarDimensionJerarquia(dimv, jerv, 1);
+        //this.cubo.rehacer();
+        int nu=0;
+        if(this.radV.isSelected())
+            nu=1;
+        this.cubo.dice(nu);
+        this.setNombres();//Cambia los nombres de los LabesNombres
         this.tabla.setModel(this.cubo.mot);
     }//GEN-LAST:event_dicebActionPerformed
 
@@ -513,7 +533,7 @@ public class VistaCubo extends javax.swing.JFrame {
         }
         this.cubo.drill(nu, true);
         this.cubo.rehacer();
-        
+        this.setNombres();//Cambia los nombres de los LabesNombres
         this.tabla.setModel(this.cubo.mot);
     }//GEN-LAST:event_drilldonwActionPerformed
 

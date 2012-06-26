@@ -33,6 +33,8 @@ public class Cubo {
     int fils=0;//Cantidad de filas
     ModeloTabla mot;
     String jerextra="";
+    String pjer="";//Jerarquia pasada
+    String pdim="";//Dimension pasada
     //Datos de conexion
     String uri="";
     String usuario="";
@@ -64,18 +66,39 @@ public class Cubo {
         if(size==0){
             this.DimensionesActuales.add(nom);
             this.JerarquiasActuales.add(Jer);
-        }
-        else if(!this.DimensionesActuales.contains(nom)){
+        } else if(!this.DimensionesActuales.contains(nom)){
                 this.DimensionesActuales.add(nom);
                 this.JerarquiasActuales.add(Jer);
         }
     }
-    
+    //intercambia la dimension y su respectiva jerarquia con otra dimension y
+    //jerarquia que este en otro indice
     public void cambiarDimensionJerarquia(String nom, String Jer, int index){
-        this.DimensionesActuales.remove(index);
-        this.JerarquiasActuales.remove(index);
-        this.DimensionesActuales.add(index, nom);
-        this.JerarquiasActuales.add(index, Jer);
+        if(this.DimensionesActuales.size()>0){
+            int indorig=this.DimensionesActuales.indexOf(nom);//indice Origen
+            String dimc=this.DimensionesActuales.get(index);//dim sustiyente
+            String jerc=this.JerarquiasActuales.get(index);//jer sustityente
+            if(index==indorig){
+                //Solo se cambia la jerarquia
+                this.JerarquiasActuales.remove(index);
+                this.JerarquiasActuales.add(index, Jer);
+            } else{
+                if(indorig>1){
+                    this.pdim=dimc;
+                    this.pjer=jerc;
+                }
+                //Sustituir la primera dimension y jerarquia
+                this.DimensionesActuales.remove(index);
+                this.JerarquiasActuales.remove(index);
+                this.DimensionesActuales.add(index, nom);
+                this.JerarquiasActuales.add(index, Jer);
+                //Pasar la dimension y jerarquia removidas a su otra posicion
+                this.DimensionesActuales.remove(indorig);
+                this.JerarquiasActuales.remove(indorig);
+                this.DimensionesActuales.add(indorig, dimc);
+                this.JerarquiasActuales.add(indorig, jerc);
+            }
+        }
     }
     
     //public void DiceDimension(String nom){  }
@@ -252,7 +275,7 @@ public class Cubo {
         this.hacerHeaderFilas();
         this.hacerJoin();
     }
-    //Nu> 
+    //Nu: indice de la dimension, tipo: false - Drill UP y True Drill down
     public void drill(int nu, boolean tipo){
         ArrayList<Dimension> dims=this.mode.dimX1;
         String ds= this.DimensionesActuales.get(nu);
@@ -265,17 +288,47 @@ public class Cubo {
                 int tam=dim.Jerarquia.size();
                 int acu=jers.indexOf(this.JerarquiasActuales.get(nu));
                 if(tipo){
-                    //if(acu<tam-1)
+                    if(acu<tam-1)
                         acu++;
                 } else {
                     if(acu>0)
                         acu--;
                 }
-                this.JerarquiasActuales.remove(nu);
-                String jera=jers.get(acu);
-                this.JerarquiasActuales.add(nu,jera);
+                if(acu!=tam){
+                    this.JerarquiasActuales.remove(nu);
+                    String jera=jers.get(acu);
+                    this.JerarquiasActuales.add(nu,jera);
+                }
             }
         }
-        
+    }
+    
+    public void guardarAnterior(String nom, String jer){
+        if(this.pdim.equals("")){
+            pdim=nom;
+            pjer=jer;
+        } else {
+            Iterator ite=this.DimensionesActuales.iterator();
+            String dim="";
+            int cont=0;
+            boolean flag=true;
+            while(ite.hasNext()){
+                dim=ite.next().toString();
+                if(dim.equals(nom))
+                    flag=false;
+                else if(cont==2)
+                    break;
+                cont++;
+            }
+            if(flag){
+                pdim=nom;
+                pjer=jer;
+            }
+        }
+    }
+    
+    public void dice(int nu){
+        this.cambiarDimensionJerarquia(pdim, pjer, nu);
+        this.rehacer();
     }
 }
