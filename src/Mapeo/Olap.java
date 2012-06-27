@@ -38,7 +38,7 @@ public class Olap {
     public ArrayList<queryDim> getDimensionesPosibles() {
         return dimensionesPosibles;
     }
-    
+    public ArrayList<String> getMetricas(){return this.Camposmetricas;}
     public Olap(Modelo m,String tablaHechos,ArrayList<String> camposmetricas)
     {
         this.a=m;
@@ -210,7 +210,7 @@ public class Olap {
                 }
             
             }
-            
+
             Iterator<String> mcamposMetricas=this.Camposmetricas.iterator();
             while(mcamposMetricas.hasNext())
             {
