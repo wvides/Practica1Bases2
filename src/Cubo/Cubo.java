@@ -26,6 +26,7 @@ public class Cubo {
      * (1) Dimension vertical actual - visible
      *  ... (n) DimensionN posible actual
      */
+    ArrayList<String> slices;
     ArrayList<String> columnas;
     ArrayList<String> filas;
     ArrayList<String> metricas;
@@ -33,6 +34,8 @@ public class Cubo {
     int fils=0;//Cantidad de filas
     ModeloTabla mot;
     String jerextra="";
+    String pjer="";//Jerarquia pasada
+    String pdim="";//Dimension pasada
     //Datos de conexion
     String uri="";
     String usuario="";
@@ -42,14 +45,17 @@ public class Cubo {
         mode=null;
         this.metricas=new ArrayList<String>();
         this.JerarquiasActuales = new ArrayList<String>();
-        this.DimensionesActuales=  new ArrayList<String>();
+        this.DimensionesActuales= new ArrayList<String>();
+        this.slices= new ArrayList<String>();
     }
+    
     public Cubo(ModeloEstrella mo){
         mode=mo;
         mot=new ModeloTabla();
         this.metricas=mode.metricas;
         this.JerarquiasActuales = new ArrayList<String>();
         this.DimensionesActuales=  new ArrayList<String>();
+        this.slices= new ArrayList<String>();
         this.filas= new ArrayList<String>();
         this.columnas= new ArrayList<String>();
     }
@@ -57,6 +63,16 @@ public class Cubo {
     /*--------Metodos----------------*/
     public void setModeloEstrella(ModeloEstrella mo){ this.mode=mo; }
     public ModeloEstrella getModeloEstrella(){ return this.mode; }
+    public void setMetricas(ArrayList<String> lis){ this.metricas=lis; }
+    public boolean addSlice(String sl){
+        if(!this.slices.contains(sl)){
+            this.slices.add(sl);   
+            return true;
+        }
+        return false; 
+    }
+    public void removeSlice(int index){this.slices.remove(index);}
+    public void removeSlices(){this.slices.clear();}
     
     //Agrega una dimension con su respectiva jerarquia, no acepta dimensiones repetidas
     public void addDimensionJerarquia(String nom, String Jer){
@@ -64,18 +80,42 @@ public class Cubo {
         if(size==0){
             this.DimensionesActuales.add(nom);
             this.JerarquiasActuales.add(Jer);
-        }
-        else if(!this.DimensionesActuales.contains(nom)){
+        } else if(!this.DimensionesActuales.contains(nom)){
                 this.DimensionesActuales.add(nom);
                 this.JerarquiasActuales.add(Jer);
         }
     }
-    
+    //intercambia la dimension y su respectiva jerarquia con otra dimension y
+    //jerarquia que este en otro indice
     public void cambiarDimensionJerarquia(String nom, String Jer, int index){
-        this.DimensionesActuales.remove(index);
-        this.JerarquiasActuales.remove(index);
-        this.DimensionesActuales.add(index, nom);
-        this.JerarquiasActuales.add(index, Jer);
+        
+        if(this.DimensionesActuales.size()>0){
+            int indorig=this.DimensionesActuales.indexOf(nom);//indice Origen
+            String dimc=this.DimensionesActuales.get(index);//dim sustiyente
+            String jerc=this.JerarquiasActuales.get(index);//jer sustityente
+            if(index==indorig){
+                //Solo se cambia la jerarquia
+                this.JerarquiasActuales.remove(index);
+                this.JerarquiasActuales.add(index, Jer);
+            } else{
+                if(indorig>1){
+                    this.pdim=dimc;
+                    this.pjer=jerc;
+                }
+                //if(this.DimensionesActuales.size()<indorig){
+                //Sustituir la primera dimension y jerarquia
+                this.DimensionesActuales.remove(index);
+                this.JerarquiasActuales.remove(index);
+                this.DimensionesActuales.add(index, nom);
+                this.JerarquiasActuales.add(index, Jer);
+                //Pasar la dimension y jerarquia removidas a su otra posicion
+                this.DimensionesActuales.remove(indorig);
+                this.JerarquiasActuales.remove(indorig);
+                this.DimensionesActuales.add(indorig, dimc);
+                this.JerarquiasActuales.add(indorig, jerc);
+                //}
+            }
+        }
     }
     
     //public void DiceDimension(String nom){  }
@@ -129,13 +169,13 @@ public class Cubo {
     public void hacerJoin(){
         this.jerextra=this.JerarquiasActuales.get(1);
         //Jerarquias
-        String com="select d1."+this.JerarquiasActuales.get(1)+", d2."+this.JerarquiasActuales.get(0)+
+        String com="select d1."+this.JerarquiasActuales.get(1)+", d0."+this.JerarquiasActuales.get(0)+
                 ", sum(t."+this.metricas.get(0)+")\n";
         
         
         //Dimensiones 
         String fro="from "+mode.NombreFactTable+" t, "+this.DimensionesActuales.get(0)+
-                " d2, "+this.DimensionesActuales.get(1)+" d1\n";
+                " d0, "+this.DimensionesActuales.get(1)+" d1\n";
         
         ArrayList<String> camps=mode.campos;
         String camp00="";
@@ -164,10 +204,10 @@ public class Cubo {
             }
         }
         
-        String whe="where t."+camp00+"=d2."+camp0+"\n and t."+
+        String whe="where t."+camp00+"=d0."+camp0+"\n and t."+
                 camp11+"=d1."+camp1+"\n";
-        String gro="group by d1."+this.getJerarquia(1)+", d2."+this.getJerarquia(0)
-               +"\n order by d1."+this.getJerarquia(1)+", d2."+this.getJerarquia(0);
+        String gro="group by d1."+this.getJerarquia(1)+", d0."+this.getJerarquia(0)
+               +"\n order by d1."+this.getJerarquia(1)+", d0."+this.getJerarquia(0);
         
         String cmd=com+fro+whe+gro;
         System.out.println(cmd);
@@ -177,7 +217,6 @@ public class Cubo {
     private void hacerTableModel(String comando){
         Sql sq= new Sql();
         ArrayList<String[]> pr=sq.consulta(comando);
-        //System.out.println("");
         Object[][] dats= this.convertirDatos(pr);
         ArrayList<String> lis=new ArrayList<String>();
         lis.add(this.jerextra);
@@ -252,7 +291,7 @@ public class Cubo {
         this.hacerHeaderFilas();
         this.hacerJoin();
     }
-    //Nu> 
+    //Nu: indice de la dimension, tipo: false - Drill UP y True Drill down
     public void drill(int nu, boolean tipo){
         ArrayList<Dimension> dims=this.mode.dimX1;
         String ds= this.DimensionesActuales.get(nu);
@@ -265,17 +304,73 @@ public class Cubo {
                 int tam=dim.Jerarquia.size();
                 int acu=jers.indexOf(this.JerarquiasActuales.get(nu));
                 if(tipo){
-                    //if(acu<tam-1)
+                    if(acu<tam-1)
                         acu++;
                 } else {
                     if(acu>0)
                         acu--;
                 }
-                this.JerarquiasActuales.remove(nu);
-                String jera=jers.get(acu);
-                this.JerarquiasActuales.add(nu,jera);
+                if(acu!=tam){
+                    this.JerarquiasActuales.remove(nu);
+                    String jera=jers.get(acu);
+                    this.JerarquiasActuales.add(nu,jera);
+                }
             }
         }
-        
+    }
+    
+    public void guardarAnterior(String nom, String jer){
+        if(this.pdim.equals("")){
+            pdim=nom;
+            pjer=jer;
+        } else {
+            Iterator ite=this.DimensionesActuales.iterator();
+            String dim="";
+            int cont=0;
+            boolean flag=true;
+            while(ite.hasNext()){
+                dim=ite.next().toString();
+                if(dim.equals(nom))
+                    flag=false;
+                else if(cont==2)
+                    break;
+                cont++;
+            }
+            if(flag){
+                pdim=nom;
+                pjer=jer;
+            }
+        }
+    }
+    
+    //Meto que realiza Dice
+    public void dice(int nu){
+        this.cambiarDimensionJerarquia(pdim, pjer, nu);
+        this.rehacer();
+    }
+    
+    //Metodo que realiza el slice
+    public void makeSlice(){
+        if(slices.size()>0){
+            ArrayList<String> vDims=new ArrayList<String>();
+            ArrayList<String> vJers=new ArrayList<String>();
+            vDims.add(this.DimensionesActuales.get(0));
+            vDims.add(this.DimensionesActuales.get(1));
+            vJers.add(this.JerarquiasActuales.get(0));
+            vJers.add(this.JerarquiasActuales.get(1));
+            //vista.add(this.di);
+            Iterator ite=slices.iterator();
+            String st="";
+            String[] dats;
+            while(ite.hasNext()){
+                st=ite.next().toString();
+                dats=st.split("|");
+                if(dats!=null){
+                    if(vDims.contains(dats[0])){
+                        
+                    }
+                }
+            }
+        }
     }
 }
