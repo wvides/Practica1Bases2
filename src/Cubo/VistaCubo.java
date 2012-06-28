@@ -713,6 +713,10 @@ public class VistaCubo extends javax.swing.JFrame {
 
     private void sliceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sliceActionPerformed
         // TODO add your handling code here:
+        this.cubo.makeSlice();
+        this.cubo.rehacer();
+        this.setNombres();
+        this.tabla.setModel(this.cubo.mot);
     }//GEN-LAST:event_sliceActionPerformed
 
     private void jDesSliceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDesSliceActionPerformed
@@ -720,6 +724,10 @@ public class VistaCubo extends javax.swing.JFrame {
         int index=this.slics.getSelectedIndex();
         this.model.remove(index);
         this.cubo.removeSlice(index);
+        this.cubo.makeSlice();
+        this.cubo.rehacer();
+        this.setNombres();
+        this.tabla.setModel(this.cubo.mot);
     }//GEN-LAST:event_jDesSliceActionPerformed
 
     private void addSliceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSliceActionPerformed

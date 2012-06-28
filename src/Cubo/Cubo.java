@@ -40,6 +40,8 @@ public class Cubo {
     String uri="";
     String usuario="";
     String pass="";
+    String fromx="";
+    String wherex="";
     /*--------Constructores----------*/
     public Cubo(){ 
         mode=null;
@@ -71,8 +73,9 @@ public class Cubo {
         }
         return false; 
     }
-    public void removeSlice(int index){this.slices.remove(index);}
-    public void removeSlices(){this.slices.clear();}
+    public void removeSlice(int index){this.slices.remove(index); this.makeSlice();}
+    public void removeSlices(){this.slices.clear(); this.fromx=""; this.wherex="";}
+    
     
     //Agrega una dimension con su respectiva jerarquia, no acepta dimensiones repetidas
     public void addDimensionJerarquia(String nom, String Jer){
@@ -176,6 +179,7 @@ public class Cubo {
         //Dimensiones 
         String fro="from "+mode.NombreFactTable+" t, "+this.DimensionesActuales.get(0)+
                 " d0, "+this.DimensionesActuales.get(1)+" d1\n";
+                fro+=this.fromx+"\n";
         
         ArrayList<String> camps=mode.campos;
         String camp00="";
@@ -206,6 +210,7 @@ public class Cubo {
         
         String whe="where t."+camp00+"=d0."+camp0+"\n and t."+
                 camp11+"=d1."+camp1+"\n";
+                whe+=this.wherex+"\n";
         String gro="group by d1."+this.getJerarquia(1)+", d0."+this.getJerarquia(0)
                +"\n order by d1."+this.getJerarquia(1)+", d0."+this.getJerarquia(0);
         
@@ -354,6 +359,9 @@ public class Cubo {
         if(slices.size()>0){
             ArrayList<String> vDims=new ArrayList<String>();
             ArrayList<String> vJers=new ArrayList<String>();
+            ArrayList<String> aDims=new ArrayList<String>();
+            wherex="";
+            fromx="";
             vDims.add(this.DimensionesActuales.get(0));
             vDims.add(this.DimensionesActuales.get(1));
             vJers.add(this.JerarquiasActuales.get(0));
@@ -364,12 +372,30 @@ public class Cubo {
             String[] dats;
             while(ite.hasNext()){
                 st=ite.next().toString();
-                dats=st.split("|");
+                dats=st.split("\\|");
+                int index=0;
+                boolean flag=false;
                 if(dats!=null){
-                    if(vDims.contains(dats[0])){
-                        
+                    flag=vDims.contains(dats[0]);
+                    //Agrega el from
+                    if(!flag && !aDims.contains(dats[0]))
+                        aDims.add(dats[0]); 
+                    if(flag){
+                        index=vDims.indexOf(dats[0]);
+                    } else {
+                        index=aDims.indexOf(dats[0])+2;
                     }
+                    //agrega el from
+                    wherex+=" and d"+index+"."+dats[1]+"="+dats[2]+"\n";
                 }
+            }
+            //Haciendo el from
+            Iterator ite2=aDims.iterator();
+            int cont=2;
+            while(ite2.hasNext()){
+                st=ite2.next().toString();
+                fromx+=", "+st+" d"+cont;
+                cont++;
             }
         }
     }
