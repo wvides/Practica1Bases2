@@ -779,7 +779,7 @@ public class Front extends javax.swing.JFrame {
                         }
                     }                                                   
             
-                    es.setDimX1(ff.getTitle(), jeraquia, "Jerarquia" + x);
+                    //es.setDimX1(ff.getTitle(), jeraquia, "Jerarquia" + x);
 
                     
                     jeraquia=new ArrayList();                          
@@ -790,18 +790,52 @@ public class Front extends javax.swing.JFrame {
                                     
         }
                 // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
+                this.setJerTiempo(es);
+                this.setJersOlap(es);
                 es.generaTablaEchos("prueba");
-                
-                Cubo cubo= new Cubo(es.getModeloEstrella());
+
+                ModeloEstrella mode= es.getModeloEstrella();
+                Cubo cubo= new Cubo(mode);
                 cubo.setMetricas(es.getMetricas());
                 cubo.setDatosUsuario(Front.URL, Front.user, Front.password);
                 VistaCubo vs= new VistaCubo(cubo);
                 vs.setVisible(true);
                     String msg = "Cubo generado exitosamente, ahora pueden analizarse los datos.";
                     JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
-
-        
     }
+    
+    private void setJersOlap(Olap ess){
+        Iterator ite=this.hierarchies.iterator();
+        hierarchy hie=null;
+        String nom="";
+        String dim="";
+        ArrayList jera=null;
+        while(ite.hasNext()){
+            dim="";
+            jera=new ArrayList<String>();
+            hie=(hierarchy)ite.next();
+            nom=hie.getName();
+            String[] arr=null;
+            Iterator ite2=hie.getFields().iterator();
+            while(ite2.hasNext()){
+                arr=(String[])ite2.next();
+                if(arr!=null){
+                    if(dim.equals(""))
+                        dim=arr[0];
+                    jera.add(arr[1]);
+                }
+            }
+            //agregando 
+            ess.setDimX1(dim, jera, nom);
+        }
+    }
+    
+    private void setJerTiempo(Olap ess){
+        String[] arr=this.jerarquiaTiempo.get(0);        
+        ess.setDimTiempo(arr[0],arr[1]);
+    }
+    
+    
 
     private void dimensionTiempo() {
         String msg = "Porfavor elija el(los) campo(s) que sera(n) la dimension de tiempo y presione \nel boton \"Define Time Dimension\"";

@@ -7,6 +7,8 @@ import Mapeo.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -42,6 +44,8 @@ public class Cubo {
     String pass="";
     String fromx="";
     String wherex="";
+    String whereh="";
+    String wherev="";
     /*--------Constructores----------*/
     public Cubo(){ 
         mode=null;
@@ -74,7 +78,8 @@ public class Cubo {
         return false; 
     }
     public void removeSlice(int index){this.slices.remove(index); this.makeSlice();}
-    public void removeSlices(){this.slices.clear(); this.fromx=""; this.wherex="";}
+    public void removeSlices(){this.slices.clear(); this.fromx=""; this.wherex="";
+                                this.whereh=""; this.wherev="";}
     
     
     //Agrega una dimension con su respectiva jerarquia, no acepta dimensiones repetidas
@@ -136,8 +141,13 @@ public class Cubo {
         Sql sq= new Sql();
         String dim=this.getDimension(i);
         String jer=this.getJerarquia(i);
-        String cons= "select d1."+jer+" from "+dim+" d1 group by d1."+jer+" order by d1."+jer;
-        //ArrayList<String[]> pr=sq.consulta("select d1.pais_nombre from dim_ubicacion d1 group by d1.pais_nombre");
+                String cons= "select "+jer+" from "+dim;
+            if(i==0)
+                cons+=this.whereh;
+            else
+                cons+=this.wherev;              
+            cons+="\ngroup by "+jer+" order by "+jer;
+//ArrayList<String[]> pr=sq.consulta("select d1.pais_nombre from dim_ubicacion d1 group by d1.pais_nombre");
         ArrayList<String[]> pr=sq.consulta(cons);
         ArrayList<String> lis = new ArrayList<String>();
         if(pr!=null){
@@ -360,7 +370,10 @@ public class Cubo {
             ArrayList<String> vDims=new ArrayList<String>();
             ArrayList<String> vJers=new ArrayList<String>();
             ArrayList<String> aDims=new ArrayList<String>();
+            ArrayList<String> Noms=new ArrayList<String>();
             wherex="";
+            wherev="";
+            whereh="";
             fromx="";
             vDims.add(this.DimensionesActuales.get(0));
             vDims.add(this.DimensionesActuales.get(1));
@@ -370,6 +383,11 @@ public class Cubo {
             Iterator ite=slices.iterator();
             String st="";
             String[] dats;
+            Pattern patron = Pattern.compile("^(\\w|\\s)+$");
+            Matcher matc = null;
+            boolean pal=false;
+            String temp="";
+            
             while(ite.hasNext()){
                 st=ite.next().toString();
                 dats=st.split("\\|");
@@ -385,10 +403,55 @@ public class Cubo {
                     } else {
                         index=aDims.indexOf(dats[0])+2;
                     }
-                    //agrega el from
-                    wherex+=" and d"+index+"."+dats[1]+"="+dats[2]+"\n";
+                    matc=patron.matcher(dats[2]);
+                    pal = matc.matches();
+                    if(pal)
+                        dats[2]="'"+dats[2]+"'";
+                    //agrega el where
+                    Noms.add("d"+index+"."+dats[1]+"="+dats[2]+"\n");
+             //wherex+=" and d"+index+"."+dats[1]+"="+dats[2]+"\n";
+                    //agregar el where de las filas y columnas
+                    if(index<2){
+                        if(index==0){
+                            if(whereh.equals("")){
+                                whereh=" where "+dats[1]+"="+dats[2]+" ";
+                            } else {
+                                whereh+=" or "+dats[1]+"="+dats[2]+" ";
+                            }
+                        } else {
+                            if(wherev.equals("")){
+                                wherev=" where "+dats[1]+"="+dats[2]+" ";
+                            } else {
+                                wherev+=" or "+dats[1]+"="+dats[2]+" ";
+                            }
+                        }
+                    }
                 }
             }
+            //Haciendo el where
+            int lar=aDims.size()+2;
+            for (int i = 0; i < lar; i++) {
+                String fin="d"+i;
+                String val="";
+                String dia="";
+                Iterator it=Noms.iterator();
+                int cont=0;
+                while(it.hasNext()){
+                    dia=it.next().toString();
+                    if(dia.startsWith(fin)){
+                        if(cont==0){
+                            val+="("+dia;
+                        } else{
+                            val+=" or "+dia;
+                        }
+                        cont++;
+                    }
+                }
+                if(val.length()>0) {
+                    this.wherex+=" and "+val+")";
+                }
+            }
+            
             //Haciendo el from
             Iterator ite2=aDims.iterator();
             int cont=2;

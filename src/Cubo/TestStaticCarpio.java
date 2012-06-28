@@ -71,7 +71,7 @@ public class TestStaticCarpio {
            //TODO: 
            //estrella tiene los campos  de la tabla hechos, las llaves foraneas  (hacia las dimenciones) y las dimenciones con jeraquias.
            
-          
+           
             
             ModeloEstrella mode= es.getModeloEstrella();
             mode.setMetricas(metricas);
