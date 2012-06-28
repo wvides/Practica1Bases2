@@ -17,6 +17,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 
 /**
  *
@@ -24,12 +27,19 @@ import javax.swing.UIManager.LookAndFeelInfo;
  */
 public class Front extends javax.swing.JFrame {
 
-    Modelo a;
+    Modelo a;    
+    Olap es;
+    String nombreJerarquia = new String();
     public static String URL = "";
     public static String user="";
-    Olap es;
     public static String password="";
     public ArrayList<String> jeraquia = new ArrayList<String>();
+    public ArrayList<String[]> jerarquiaTiempo = new ArrayList<String[]>();
+    public ArrayList<queryDim> myquery;
+    public ArrayList<hierarchy> hierarchies = new ArrayList<hierarchy>();
+    DefaultMutableTreeNode top = new DefaultMutableTreeNode("Jearquias");
+    
+    
             
     DefaultListModel dm = new DefaultListModel();
     /**
@@ -48,7 +58,9 @@ public class Front extends javax.swing.JFrame {
 }
         initComponents();
         this.setExtendedState(this.getExtendedState()|JFrame.MAXIMIZED_BOTH);
-        jButton4.setEnabled(false);
+        jButton4.setEnabled(false);                
+        jButton5.setEnabled(false);
+        jButton6.setEnabled(false);
     }
 
     /**
@@ -72,12 +84,30 @@ public class Front extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jDialog2 = new javax.swing.JDialog();
+        jLabel8 = new javax.swing.JLabel();
+        jTextField4 = new javax.swing.JTextField();
+        jButton7 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jDesktopPane1 = new javax.swing.JDesktopPane();
-        jDesktopPane2 = new javax.swing.JDesktopPane();
+        jPanel1 = new javax.swing.JPanel();
+        jDesktopPane3 = new javax.swing.JDesktopPane();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabel7 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
+        jSeparator3 = new javax.swing.JSeparator();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jSeparator5 = new javax.swing.JToolBar.Separator();
+        jButton5 = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
+        jButton6 = new javax.swing.JButton();
+        jSeparator6 = new javax.swing.JToolBar.Separator();
         jButton4 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -195,6 +225,47 @@ public class Front extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jDialog2.setTitle("Definir nombre de jerarquia");
+        jDialog2.setBounds(new java.awt.Rectangle(0, 0, 506, 100));
+        jDialog2.setModal(true);
+
+        jLabel8.setText("Nombre la jerarquia");
+
+        jButton7.setText("Definir");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jDialog2Layout = new javax.swing.GroupLayout(jDialog2.getContentPane());
+        jDialog2.getContentPane().setLayout(jDialog2Layout);
+        jDialog2Layout.setHorizontalGroup(
+            jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jDialog2Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(18, 18, 18)
+                        .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialog2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton7)))
+                .addContainerGap())
+        );
+        jDialog2Layout.setVerticalGroup(
+            jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addComponent(jButton7)
+                .addContainerGap())
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
@@ -204,7 +275,74 @@ public class Front extends javax.swing.JFrame {
 
         jDesktopPane1.setAutoscrolls(true);
         jTabbedPane1.addTab("Transaccional", jDesktopPane1);
-        jTabbedPane1.addTab("Dimensiones/Jerarquias", jDesktopPane2);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+
+        jLabel6.setText("Dimension Tiempo");
+
+        jScrollPane1.setViewportView(jList1);
+
+        jLabel7.setText("Jerarquias");
+
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
+        jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
+        jScrollPane2.setViewportView(jTree1);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jSeparator4)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel7))
+                .addGap(0, 11, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jDesktopPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 681, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jDesktopPane3)
+            .addComponent(jSeparator3)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Dimension/Jerarquias", jPanel1);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -216,7 +354,28 @@ public class Front extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton1);
+        jToolBar1.add(jSeparator5);
+
+        jButton5.setText("Define Time Dimension");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton5);
         jToolBar1.add(jSeparator2);
+
+        jButton6.setText("Define new hierarchy");
+        jButton6.setFocusable(false);
+        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton6);
+        jToolBar1.add(jSeparator6);
 
         jButton4.setText("Generate Cube");
         jButton4.setFocusable(false);
@@ -255,7 +414,7 @@ public class Front extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 923, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
             .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -263,7 +422,7 @@ public class Front extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -354,6 +513,20 @@ public class Front extends javax.swing.JFrame {
         crearJerarquias();
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        definirTiempo();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        definirJerarquia();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        nombreJerarquia = jTextField4.getText();
+        jTextField4.setText("");
+        jDialog2.dispose();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -400,27 +573,45 @@ public class Front extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JDesktopPane jDesktopPane1;
-    private javax.swing.JDesktopPane jDesktopPane2;
+    private javax.swing.JDesktopPane jDesktopPane3;
     private javax.swing.JDialog jDialog1;
+    private javax.swing.JDialog jDialog2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JList jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JToolBar.Separator jSeparator5;
+    private javax.swing.JToolBar.Separator jSeparator6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
 
     private void cargarUiTransaccional(Modelo a) {
@@ -480,7 +671,8 @@ public class Front extends javax.swing.JFrame {
     private void generarOlap(Modelo a, String title, ArrayList<String> metricas) {
         
         es = new Olap(a,title,metricas);
-        ArrayList<queryDim> myquery = es.getDimensionesPosibles();
+        myquery = es.getDimensionesPosibles();
+        dimensionTiempo();
         crearNuevaUi(myquery);
         //generarJerarquia(es);
     }
@@ -544,7 +736,7 @@ public class Front extends javax.swing.JFrame {
                 jp.add(chk);
             }
             f.add(jp);
-            if(wrap == 6)
+            if(wrap == 3)
             {
                 ypos++;
                 xpos = 0;
@@ -552,16 +744,16 @@ public class Front extends javax.swing.JFrame {
             }
             f.setBounds(xpos * 210, ypos*155, 200, 150);
             f.setVisible(true);                
-            this.jDesktopPane2.add(f);
+            this.jDesktopPane3.add(f);
             xpos++;
             wrap++;
-        }         
-        jButton4.setEnabled(true);
+        }                 
+//        jButton4.setEnabled(true);
     }
 
     private void crearJerarquias() {
                 
-        Component[] components = jDesktopPane2.getComponents();         
+        Component[] components = jDesktopPane3.getComponents();         
         for(int x = 0; x < components.length; x++)
         {
             Component comp = components[x];            
@@ -598,7 +790,7 @@ public class Front extends javax.swing.JFrame {
                                     
         }
                 // ya introducidas las dimenciones con jerarquias se coloca el nombre de la tabla hechos.  este metodo crea un Atributo de Olap(estrella) 
-                es.generaTablaEchos("prueba");
+                es.generaTablaEchos("Fact Table");
                 Cubo cubo= new Cubo(es.getModeloEstrella());
                 cubo.setDatosUsuario(Front.URL, Front.user, Front.password);
                 VistaCubo vs= new VistaCubo(cubo);
@@ -607,5 +799,131 @@ public class Front extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
 
         
+    }
+
+    private void dimensionTiempo() {
+        String msg = "Porfavor elija el(los) campo(s) que sera(n) la dimension de tiempo y presione \nel boton \"Define Time Dimension\"";
+                    JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
+        jButton5.setEnabled(true);
+    }
+
+    private void definirTiempo() {
+        DefaultListModel dlm = new DefaultListModel();
+        Component[] components = jDesktopPane3.getComponents();
+        for(int x = 0; x < components.length; x++)
+        {
+            Component comp = components[x];            
+            if(comp instanceof JInternalFrame)
+            {                
+                JInternalFrame ff = (JInternalFrame) comp;
+                                
+                    JPanel jpn = (JPanel) ff.getContentPane().getComponent(0);                    
+                    Component[] subcomponents = jpn.getComponents(); 
+                    
+                    for(int y = 0; y < subcomponents.length; y++)
+                    {
+                        Component subcomp = subcomponents[y];                        
+                        if(subcomp instanceof JCheckBox)
+                        {
+                            JCheckBox jchk = (JCheckBox) subcomp;                            
+                            if(jchk.isSelected())
+                            {
+                                String[] mytime = new String[2];
+                                mytime[0] = ff.getTitle();
+                                mytime[1] = jchk.getText();
+                                dlm.add(0, mytime[1]);
+                                jerarquiaTiempo.add(mytime);
+                            }                        
+                        }
+                    }
+                    
+                    //for para extraccion de metricas.                                        
+                    //generarOlap(a,ff.getTitle(), metricas);
+                }
+            if(!dlm.isEmpty())                   
+            jButton5.setEnabled(false);
+            jButton6.setEnabled(true);
+        }
+        jList1.setModel(dlm);
+        removerComponentes();            
+        String msg = "Porfavor elija el(los) campo(s) que sera(n) una jerarquia, luego presione \nel boton \"Define new hierarchy\"";
+                    JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void removerComponentes() {             
+        Component[] components = jDesktopPane3.getComponents();
+        for(int x = 0; x < components.length; x++)
+        {
+            Component comp = components[x];            
+            if(comp instanceof JInternalFrame)
+            {                
+                JInternalFrame ff = (JInternalFrame) comp;
+                                
+                    JPanel jpn = (JPanel) ff.getContentPane().getComponent(0);                    
+                    Component[] subcomponents = jpn.getComponents(); 
+                    
+                    for(int y = 0; y < subcomponents.length; y++)
+                    {
+                        Component subcomp = subcomponents[y];                        
+                        if(subcomp instanceof JCheckBox)
+                        {
+                            JCheckBox jchk = (JCheckBox) subcomp;   
+                            jchk.setSelected(false);
+                        }
+                    }                    
+                }
+        }
+    }
+
+    private void definirJerarquia() {
+        DefaultListModel dlm = new DefaultListModel();
+        Component[] components = jDesktopPane3.getComponents();
+        hierarchy newhier = new hierarchy();
+        jDialog2.setVisible(true);
+        newhier.setName(nombreJerarquia);        
+        nombreJerarquia = "";
+        DefaultMutableTreeNode Hier = new DefaultMutableTreeNode(newhier.getName());        
+        
+        for(int x = 0; x < components.length; x++)
+        {
+            Component comp = components[x];            
+            if(comp instanceof JInternalFrame)
+            {                
+                JInternalFrame ff = (JInternalFrame) comp;
+                                
+                    JPanel jpn = (JPanel) ff.getContentPane().getComponent(0);                    
+                    Component[] subcomponents = jpn.getComponents(); 
+                    
+                    for(int y = 0; y < subcomponents.length; y++)
+                    {
+                        Component subcomp = subcomponents[y];                        
+                        if(subcomp instanceof JCheckBox)
+                        {
+                            JCheckBox jchk = (JCheckBox) subcomp;                            
+                            if(jchk.isSelected())
+                            {
+                                String[] myhier = new String[2];
+                                myhier[0] = ff.getTitle();
+                                myhier[1] = jchk.getText();
+                                newhier.getFields().add(myhier);     
+                                DefaultMutableTreeNode field = new DefaultMutableTreeNode(myhier[1]);
+                                Hier.add(field);
+                            }                        
+                        }
+                    }                    
+                }
+            if(!dlm.isEmpty())                   
+            jButton5.setEnabled(false);
+        }
+        top.add(Hier);        
+        DefaultTreeModel d = new DefaultTreeModel(top);
+        jTree1.setModel(d);
+        
+        removerComponentes();
+             
+        hierarchies.add(newhier);
+        String msg = "Jerarquia Definida exitosamente";
+                    JOptionPane.showMessageDialog(this,msg,"MessageBox Title",JOptionPane.INFORMATION_MESSAGE);
+        jButton4.setEnabled(true);
     }
 }
