@@ -18,11 +18,16 @@ public class Olap {
     ModeloEstrella estrella;
     
     
+    
     Modelo a;    
     
     ArrayList<queryDim> dimensionesPosibles;     
     
     ArrayList <Dimension> dimX1=new ArrayList();
+
+    public ArrayList<Dimension> getDimX1() {
+        return dimX1;
+    }
      
     String tablaechosOrignial;
     
@@ -34,6 +39,22 @@ public class Olap {
     
     ArrayList<String> Camposmetricas=new ArrayList();
     
+    
+    
+    public Dimension getDimension(String nombre)
+    {
+        Dimension res=null;
+        Dimension temp=null;
+        Iterator <Dimension> tempD=this.dimX1.iterator();
+        
+        while(tempD.hasNext())    
+        {
+            temp=tempD.next();
+            if(temp.NombreDim.contains(nombre)){return temp;}
+        }           
+        
+        return res;
+    }
     
     public ArrayList<queryDim> getDimensionesPosibles() {
         return dimensionesPosibles;
@@ -49,6 +70,25 @@ public class Olap {
         a.getDimensiones(tablaHechos);                
         
         this.dimensionesPosibles=a.getDimOriginales();
+    }
+    
+    
+    public Olap(Modelo m,String tablaHechos,ArrayList<String> camposmetricas,String campoFechaHechos)
+    {
+        this.a=m;
+        
+        this.Camposmetricas=camposmetricas;
+        this.tablaechosOrignial=tablaHechos;
+        a.cargarEntidades();
+        a.getDimensiones(tablaHechos);                
+        
+        this.dimensionesPosibles=a.getDimOriginales();
+        
+        queryDim t1=new queryDim();
+        
+            t1.CrearDimensionTiempoTablaHechos(campoFechaHechos,a.BuscarEntidad(tablaHechos) );
+        
+        this.dimensionesPosibles.add(t1);
     }
     
     
@@ -221,7 +261,7 @@ public class Olap {
             
             
             
-            String STH="CREATE TABLE "+this.NombreTablahechos+" AS SELECT "+sCamposC+" FROM "+sTablasC+" WHERE "+sPredicadoC+";";
+            String STH="CREATE  TABLE "+this.NombreTablahechos+" AS SELECT "+sCamposC+" FROM "+sTablasC+" WHERE "+sPredicadoC+";";
             
             Sql th=new Sql();
             th.ejecuta(STH);

@@ -99,7 +99,9 @@ public class Dimension {
 
                 Iterator<String> camposClave = this.dimOriginal.forenKeyOriginal.camposPadre.iterator();
                 while (camposClave.hasNext()) {
-                    String tcampoClave = this.dimOriginal.forenKeyOriginal.tablaPadre + "_" + camposClave.next();
+                    String tcampoc=camposClave.next();
+                    String tcampoClave = this.dimOriginal.forenKeyOriginal.tablaPadre + "_" + tcampoc;
+                    
                     this.camposllave.add(tcampoClave);
                     this.Campos.add(tcampoClave);
                     encabezado = encabezado + ", dim." + tcampoClave;

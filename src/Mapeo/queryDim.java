@@ -203,6 +203,41 @@ public class queryDim {
         a.ejecuta(CrearTabla);
         }  
     }
+    
+    public void CrearDimensionTiempoTablaHechos(String campo_fecha, Entidad entidadParaHechos)
+    {
+        
+        this.Entidades.add(entidadParaHechos.nombre);
+        
+        ArrayList<String> c=new ArrayList();
+        c.add(campo_fecha);
+        ArrayList<String> cp=new ArrayList();
+        cp.add(campo_fecha);
+        
+        ForenKey fk=new ForenKey(c,cp,entidadParaHechos.nombre,entidadParaHechos.nombre);
+        
+        this.Atributos.add(campo_fecha);
+        this.Atributos.add("año");
+        this.Atributos.add("trimestre");
+        this.Atributos.add("mes");
+        this.Atributos.add("dia");
+        
+        this.CamposLlave.add(campo_fecha);
+        
+        this.Nombre="dimension_0t";
+        
+        this.forenKeyOriginal=fk;
+        
+        
+         String select="(SELECT "+ campo_fecha +" FROM "+entidadParaHechos.nombre+" GROUP BY "+campo_fecha+") AS t";
+         String jeraquia=campo_fecha+" AS "+entidadParaHechos.nombre+"_"+campo_fecha+", extract( year from t."+campo_fecha+") AS año, extract(quarter from t."+campo_fecha+") AS trimestre, extract(month from t."+campo_fecha+") AS mes, extract(day from t."+campo_fecha+") AS dia";
+         String SelectQ="SELECT  "+jeraquia+" FROM "+select+";";
+         
+         String CrearTabla="CREATE  TABLE dimension_0t "+" AS "+SelectQ+"";
+         
+         Sql a=new Sql();
+        a.ejecuta(CrearTabla);
+    }
 
     public String getNombre() {
         return Nombre;
