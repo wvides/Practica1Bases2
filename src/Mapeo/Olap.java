@@ -259,7 +259,10 @@ public class Olap {
                 sCamposC=sCamposC+", "+tempcMetica;
             }
             
-            
+            String drop="DROP TABLE "+this.NombreTablahechos+";";
+            Sql dropt=new Sql();
+            dropt.ejecuta(drop);
+           
             
             String STH="CREATE  TABLE "+this.NombreTablahechos+" AS SELECT "+sCamposC+" FROM "+sTablasC+" WHERE "+sPredicadoC+";";
             

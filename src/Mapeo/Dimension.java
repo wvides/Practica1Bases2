@@ -46,10 +46,13 @@ public class Dimension {
 
         Jerarquia = new ArrayList();
 
-        this.Jerarquia.add("año");
-        this.Jerarquia.add("trimestre");
-        this.Jerarquia.add("mes");
         this.Jerarquia.add("dia");
+        this.Jerarquia.add("mes");
+        this.Jerarquia.add("trimestre");
+        this.Jerarquia.add("año");
+        
+        
+        
 
         this.NombreDim = "dim_tiempo";
         String pk = "";
@@ -66,7 +69,11 @@ public class Dimension {
                 }
 
             }
-
+            
+            String drop="DROP TABLE "+this.NombreDim+";";
+                Sql dropt=new Sql();
+                dropt.ejecuta(drop);
+            
             String encabezado = pk + ", extract(year from t." + campo_fecha + ") AS año ,extract(quarter from t." + campo_fecha + ") AS trimestre ,extract(month from t." + campo_fecha + ") AS mes ,extract(day from t." + campo_fecha + ") AS dia";
             String tablas = this.dimOriginal.Nombre + " t";
             String CrearTabla = "CREATE TABLE " + this.NombreDim + " AS SELECT " + encabezado + " FROM " + tablas + ";";
@@ -109,7 +116,11 @@ public class Dimension {
                 //this.dimOriginal.forenKeyOriginal.
 
                 this.sSelect = "SELECT  " + encabezado + " FROM " + this.dimOriginal.Nombre + " AS dim GROUP BY " + encabezado + ";";
-
+                
+                String drop="DROP TABLE "+this.NombreDim+";";
+                Sql dropt=new Sql();
+                dropt.ejecuta(drop);
+                
 
                 String CrearTabla = "CREATE TABLE dim_" + Nombre + " AS " + this.sSelect;
 

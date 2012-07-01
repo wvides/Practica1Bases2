@@ -145,6 +145,10 @@ public class queryDim {
                    Sql restart=new Sql();
                    restart.ejecuta(restartSeq);
                    
+                 String drop="DROP TABLE "+nombreDim+";";
+                  Sql dropt=new Sql();
+                 dropt.ejecuta(drop);
+                   
                     this.Select="SELECT  nextval(\'sk_dim\') AS PK,"+this.Encabezado+" FROM "+this.Tablas+" WHERE "+this.Condicion+";";                    
                     result="CREATE TABLE "+nombreDim+" AS "+this.Select;
                     Sql createView=new Sql();
@@ -159,6 +163,10 @@ public class queryDim {
                 Sql restart=new Sql();
                 restart.ejecuta(restartSeq);
                    
+                String drop="DROP TABLE "+nombreDim+";";
+                Sql dropt=new Sql();
+                dropt.ejecuta(drop);
+                
                 this.Select="SELECT nextval(\'sk_dim\') AS PK,"+this.Encabezado+" FROM "+this.Tablas+";";                    
                 result="CREATE TABLE "+nombreDim+" AS "+this.Select;
                 Sql createView=new Sql();
@@ -195,6 +203,10 @@ public class queryDim {
             
         }
         
+        String drop="DROP TABLE "+"dim_tiempo"+";";
+          Sql dropt=new Sql();
+          dropt.ejecuta(drop);
+        
         String encabezado=pk+", extract(year from t."+campo_fecha+") AS año ,extract(quarter from t."+ campo_fecha+") AS trimestre ,extract(month from t."+ campo_fecha+") AS mes ,extract(day from t."+campo_fecha+") AS dia";
         String tablas=this.Nombre+" t";        
         String CrearTabla="CREATE TABLE dim_tiempo "+" AS SELECT "+encabezado+" FROM "+tablas+";"; 
@@ -216,11 +228,14 @@ public class queryDim {
         
         ForenKey fk=new ForenKey(c,cp,entidadParaHechos.nombre,entidadParaHechos.nombre);
         
-        this.Atributos.add(campo_fecha);
-        this.Atributos.add("año");
-        this.Atributos.add("trimestre");
-        this.Atributos.add("mes");
         this.Atributos.add("dia");
+        this.Atributos.add("mes");
+        this.Atributos.add("trimestre");
+        this.Atributos.add("año");
+        
+        
+        
+        this.Atributos.add(campo_fecha);
         
         this.CamposLlave.add(campo_fecha);
         
@@ -233,6 +248,10 @@ public class queryDim {
          String jeraquia=campo_fecha+" AS "+entidadParaHechos.nombre+"_"+campo_fecha+", extract( year from t."+campo_fecha+") AS año, extract(quarter from t."+campo_fecha+") AS trimestre, extract(month from t."+campo_fecha+") AS mes, extract(day from t."+campo_fecha+") AS dia";
          String SelectQ="SELECT  "+jeraquia+" FROM "+select+";";
          
+         String drop="DROP TABLE "+"dimension_0t"+";";
+          Sql dropt=new Sql();
+          dropt.ejecuta(drop);
+          
          String CrearTabla="CREATE  TABLE dimension_0t "+" AS "+SelectQ+"";
          
          Sql a=new Sql();
